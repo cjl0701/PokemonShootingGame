@@ -4,9 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import org.pokemonshootinggame.framework.AppManager;
+import org.pokemonshootinggame.framework.GraphicObject;
 import org.pokemonshootinggame.framework.SpriteAnimation;
 
-public class Enemy extends SpriteAnimation {
+public class Enemy extends GraphicObject {
     protected int hp;
     protected float speed;
     public static final int MOVE_PATTERN_1 = 0;
@@ -32,9 +33,7 @@ public class Enemy extends SpriteAnimation {
         tp = displayHeight / 2 + 40;
     }
 
-    @Override
     public void update(long gameTime) { //이동
-        super.update(gameTime); //애니메이션 프레임 변경
         attack(); //미사일 발사
         move();
         if (m_y > displayHeight) state = STATE_OUT; //화면 밖에 나가면 삭제

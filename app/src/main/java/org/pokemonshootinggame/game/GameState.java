@@ -24,20 +24,18 @@ public class GameState implements IState {
     private long lastRegenEnemy = System.currentTimeMillis();
     private Random randEnemy = new Random();
     private int displayWidth;
-    private int characterSize;
 
     @Override
     public void init() {
         AppManager.getInstance().setGameState(this);
-        Bitmap player = AppManager.getInstance().getBitmap(R.drawable.player);
+        Bitmap player = AppManager.getInstance().getBitmap(R.drawable.tempplayer);
         m_player = new Player(player);
         m_playerSpeed = 5;
-        m_backGround = new BackGround(1); //0,1에 따라 배경화면 바뀜
+        m_backGround = new BackGround(0); //0,1에 따라 배경화면 바뀜
         //m_keypad=new GraphicObject(AppManager.getInstance().getBitmap(R.drawable.keypad));
         //m_keypad.setPosition(0,460-120);
 
         displayWidth = AppManager.getInstance().getDisplayWidth();
-        characterSize = player.getWidth() / 6;
     }
 
     @Override
@@ -126,7 +124,7 @@ public class GameState implements IState {
             else if (enemyType == 1) enemy = new Enemy_2();
             else if (enemyType == 2) enemy = new Enemy_3();
 
-            enemy.setPosition(randEnemy.nextInt(displayWidth - characterSize), -60);
+            enemy.setPosition(randEnemy.nextInt(displayWidth - enemy.width), -60);
             enemy.moveType = randEnemy.nextInt(3);
 
             m_enemyList.add(enemy);
