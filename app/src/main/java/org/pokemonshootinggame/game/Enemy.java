@@ -8,8 +8,8 @@ import org.pokemonshootinggame.framework.GraphicObject;
 import org.pokemonshootinggame.framework.SpriteAnimation;
 
 public class Enemy extends GraphicObject {
-    protected int hp;
-    protected float speed;
+    protected int m_hp;
+    protected float m_speed;
     public static final int MOVE_PATTERN_1 = 0;
     public static final int MOVE_PATTERN_2 = 1;
     public static final int MOVE_PATTERN_3 = 2;
@@ -37,24 +37,25 @@ public class Enemy extends GraphicObject {
         attack(); //미사일 발사
         move();
         if (m_y > displayHeight) state = STATE_OUT; //화면 밖에 나가면 삭제
+        m_boundBox.set(m_x+10, m_y, m_x +width-10, m_y+height); //이동할 때마다 박스 영역의 값을 갱신
     }
 
     void move() {
         if (moveType == MOVE_PATTERN_1) {
-            if (m_y <= tp) m_y += speed; //중간 지점까지 기본 속도
-            else m_y += speed * 2; //중간 지점 이후 빠른 속도
+            if (m_y <= tp) m_y += m_speed; //중간 지점까지 기본 속도
+            else m_y += m_speed * 2; //중간 지점 이후 빠른 속도
 
         } else if (moveType == MOVE_PATTERN_2) {
-            if (m_y <= tp) m_y += speed; //중간 지점까지 일자로 이동
+            if (m_y <= tp) m_y += m_speed; //중간 지점까지 일자로 이동
             else {//중간 지점 이후 대각선 이동
-                m_x += speed;
-                m_y += speed;
+                m_x += m_speed;
+                m_y += m_speed;
             }
         } else if (moveType == MOVE_PATTERN_3) {
-            if (m_y <= tp) m_y += speed; //중간 지점까지 일자로 이동
+            if (m_y <= tp) m_y += m_speed; //중간 지점까지 일자로 이동
             else {//중간 지점 이후 대각선 이동
-                m_x -= speed;
-                m_y += speed;
+                m_x -= m_speed;
+                m_y += m_speed;
             }
         }
     }

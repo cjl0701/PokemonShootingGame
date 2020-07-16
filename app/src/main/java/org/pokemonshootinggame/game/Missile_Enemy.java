@@ -21,6 +21,6 @@ public class Missile_Enemy extends Missile{
         m_y += 5; //미사일이 아래로 발사되는 효과
         if (m_y > displayHeight) state = STATE_OUT; //화면 밖을 벗어나면 제거
 
-        m_boundBox.set(m_x+10, m_y, m_x +width-10, m_y+height); //이동할 때마다 박스 영역의 값을 갱신
+        m_boundBox.set(m_x+10, m_y+10, m_x +width-10, m_y+height-10); //이동할 때마다 박스 영역의 값을 갱신
     }
 }

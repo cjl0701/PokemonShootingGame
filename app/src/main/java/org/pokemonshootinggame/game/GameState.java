@@ -16,7 +16,6 @@ import java.util.Random;
 
 public class GameState implements IState {
     private Player m_player;
-    private int m_playerSpeed;
     private BackGround m_backGround;
     private ArrayList<Enemy> m_enemyList = new ArrayList<>();
     private ArrayList<Missile_Player> m_pmsList = new ArrayList<>();
@@ -28,18 +27,11 @@ public class GameState implements IState {
     @Override
     public void init() {
         AppManager.getInstance().setGameState(this);
-        Bitmap player = AppManager.getInstance().getBitmap(R.drawable.tempplayer);
-        m_player = new Player(player);
-        m_playerSpeed = 5;
+        m_player = new Player_1();
         m_backGround = new BackGround(0); //0,1에 따라 배경화면 바뀜
-        //m_keypad=new GraphicObject(AppManager.getInstance().getBitmap(R.drawable.keypad));
-        //m_keypad.setPosition(0,460-120);
 
         displayWidth = AppManager.getInstance().getDisplayWidth();
     }
-
-    @Override
-    public void destroy() { }
 
     @Override
     public void update() {
@@ -52,15 +44,13 @@ public class GameState implements IState {
         for (int i = m_pmsList.size() - 1; i >= 0; i--) {
             Missile_Player pms = m_pmsList.get(i);
             pms.update(); //미사일 이동
-            //화면 밖으로 나간 객체를 각 리스트에서 제거
-            if (pms.state == Missile.STATE_OUT) m_pmsList.remove(i);
+            if (pms.state == Missile.STATE_OUT) m_pmsList.remove(i); //화면 밖으로 나간 객체를 각 리스트에서 제거
         }
 
         //적
         for (int i = m_enemyList.size() - 1; i >= 0; i--) {
             Enemy enemy = m_enemyList.get(i);
             enemy.update(gameTime); //이동
-            //화면 밖으로 나간 객체를 각 리스트에서 제거
             if (enemy.state == Enemy.STATE_OUT) m_enemyList.remove(i);
         }
 
@@ -82,13 +72,12 @@ public class GameState implements IState {
         for (Enemy enemy : m_enemyList) enemy.draw(canvas);
         for (Missile_Enemy enemms : m_enemmsList) enemms.draw(canvas);
         m_player.draw(canvas);
-        //m_keypad.draw(canvas);
 
         //플레이어의 생명 표시
         Paint paint = new Paint();
         paint.setTextSize(100);
         paint.setColor(Color.BLACK);
-        canvas.drawText("남은 목숨: " + String.valueOf(m_player.getLife()), 0, 100, paint);
+        canvas.drawText("남은 목숨: " + m_player.getLife(), 0, 100, paint);
     }
 
     @Override
@@ -98,21 +87,16 @@ public class GameState implements IState {
         int y = m_player.getY();
 
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
-            m_player.setPosition(x - m_playerSpeed, y);
+            m_player.setPosition(x - m_player.m_speed, y);
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
-            m_player.setPosition(x + m_playerSpeed, y);
+            m_player.setPosition(x + m_player.m_speed, y);
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP)
-            m_player.setPosition(x, y - m_playerSpeed);
+            m_player.setPosition(x, y - m_player.m_speed);
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
-            m_player.setPosition(x, y + m_playerSpeed);
-        if (keyCode == KeyEvent.KEYCODE_SPACE)
-            m_pmsList.add(new Missile_Player(x, y + 30)); //미사일이 플레이어 위에
+            m_player.setPosition(x, y + m_player.m_speed);
 
         return true;
     }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) { return false; }
 
     public void makeEnemy() {
         if (System.currentTimeMillis() - lastRegenEnemy >= 3000) { //생성 시점 이후 3초가 넘으면
@@ -124,6 +108,7 @@ public class GameState implements IState {
             else if (enemyType == 1) enemy = new Enemy_2();
             else if (enemyType == 2) enemy = new Enemy_3();
 
+            assert enemy != null;
             enemy.setPosition(randEnemy.nextInt(displayWidth - enemy.width), -60);
             enemy.moveType = randEnemy.nextInt(3);
 
@@ -165,5 +150,15 @@ public class GameState implements IState {
         }
     }
 
+    public ArrayList<Missile_Player> getPmsList() { return m_pmsList; }
     public ArrayList<Missile_Enemy> getEnemmsList() { return m_enemmsList; }
+
+    public void changePlayerState(){ //진화석과 충돌하면 진화 -> state 패턴 적용
+        m_player = m_player.evolve();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) { return false; }
+    @Override
+    public void destroy() { }
 }

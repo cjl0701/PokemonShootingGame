@@ -33,38 +33,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         changeGameState(new GameState()); //실행 테스트
 
         m_thread = new GameViewThread(getHolder(), this);
-
-        /*//배경화면
-        int displayWidth = context.getResources().getDisplayMetrics().widthPixels;
-        Bitmap bitmap = AppManager.getInstance().getBitmap(R.drawable.background2);
-        bitmap = Bitmap.createScaledBitmap(bitmap, displayWidth, bitmap.getHeight(), true);
-        m_image = new GraphicObject(bitmap);*/
-
-
-        /*//스프라이트 이미지
-        bitmap = AppManager.getInstance().getBitmap(R.drawable.item1);
-        m_spr = new SpriteAnimation(bitmap);
-        m_spr.initSpriteData(bitmap.getWidth() / 4, bitmap.getHeight(), 5, 4);
-         */
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        //canvas.drawColor(Color.BLACK);
-        //m_image.draw(canvas);
-        m_state.render(canvas);
-        //m_spr.draw(canvas);
-    }
+    protected void onDraw(Canvas canvas) { m_state.render(canvas); }
 
     //데이터의 자동 갱신
     //update 메서드를 스레드에서 지속적으로 실행해야만 갱신이 수행되므로
     //GameViewThread의 run 메서드에서 update() 메서드를 실행하게 함
     //화면과 관련된 이벤트가 발생하지 않아도 게임 루프가 계속 돌아가는 기반
-    public void update() {
-        m_state.update();
-        //long gameTime = System.currentTimeMillis();
-        //m_spr.update(gameTime);
-    }
+    public void update() { m_state.update(); }
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
@@ -76,9 +54,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-    }
+    public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) { }
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
@@ -98,9 +74,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return m_state.onKeyDown(keyCode, event);
-    }
+    public boolean onKeyDown(int keyCode, KeyEvent event) { return m_state.onKeyDown(keyCode, event); }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
