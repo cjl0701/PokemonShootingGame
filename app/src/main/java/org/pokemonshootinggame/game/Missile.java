@@ -14,5 +14,6 @@ public class Missile extends GraphicObject {
     public Missile(Bitmap bitmap) {
         super(bitmap);
     }
+
 }
 

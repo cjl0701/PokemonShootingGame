@@ -5,9 +5,9 @@ import android.graphics.Bitmap;
 import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
 
-public class Player_1_evolved extends Player {
-    public Player_1_evolved(int life, int x, int y) {
-        super(AppManager.getInstance().getBitmap(R.drawable.lightu));
+public class Player_3_evolved extends Player {
+    public Player_3_evolved(int life, int x, int y) {
+        super(AppManager.getInstance().getBitmap(R.drawable.lizamong));
         setPosition(x,y);
         m_life=life;
         m_speed=10;
@@ -21,7 +21,7 @@ public class Player_1_evolved extends Player {
     public void attack() { //짧은 시간 텀, 여러 갈래로 쏘거나, 충돌에도 사라지지 않고 지속적 공격
         if (System.currentTimeMillis() - lastShoot >= 2000) {
             lastShoot = System.currentTimeMillis();
-            AppManager.getInstance().getGameState().getPmsList().add(new Missile_Player(this,m_x+30, m_y-50));
+            AppManager.getInstance().getGameState().getPmsList().add(new Missile_Player(this,m_x+10, m_y-50));
         }
     }
 
@@ -31,5 +31,5 @@ public class Player_1_evolved extends Player {
     } //진화x
 
     @Override
-    public Bitmap getMsBitmap() {return AppManager.getInstance().getBitmap(R.drawable.thunder2); }
+    public Bitmap getMsBitmap() {return AppManager.getInstance().getBitmap(R.drawable.fire2); }
 }

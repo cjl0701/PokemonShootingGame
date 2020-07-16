@@ -29,6 +29,10 @@ public class AppManager {
 
     //자주 쓰이는 기능 추가
     public Bitmap getBitmap(int r) { return BitmapFactory.decodeResource(m_resources, r); }
+    public Bitmap getResizeBitmap(int r, int width, int height) {
+        Bitmap b = BitmapFactory.decodeResource(m_resources, r);
+        return Bitmap.createScaledBitmap(b, width, height, true);
+    }
     public int getDisplayWidth() { return displayWidth; }
     public int getDisplayHeight() { return displayHeight; }
 

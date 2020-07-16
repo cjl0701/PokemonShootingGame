@@ -5,9 +5,9 @@ import android.graphics.Bitmap;
 import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
 
-public class Player_1_evolved extends Player {
-    public Player_1_evolved(int life, int x, int y) {
-        super(AppManager.getInstance().getBitmap(R.drawable.lightu));
+public class Player_2_evolved extends Player {
+    public Player_2_evolved(int life, int x, int y) {
+        super(AppManager.getInstance().getBitmap(R.drawable.geobukwang));
         setPosition(x,y);
         m_life=life;
         m_speed=10;
@@ -31,5 +31,5 @@ public class Player_1_evolved extends Player {
     } //진화x
 
     @Override
-    public Bitmap getMsBitmap() {return AppManager.getInstance().getBitmap(R.drawable.thunder2); }
+    public Bitmap getMsBitmap() {return AppManager.getInstance().getBitmap(R.drawable.water2); }
 }

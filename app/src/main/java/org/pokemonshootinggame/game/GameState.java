@@ -12,6 +12,7 @@ import org.pokemonshootinggame.framework.AppManager;
 import org.pokemonshootinggame.framework.IState;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 public class GameState implements IState {
@@ -27,8 +28,8 @@ public class GameState implements IState {
     @Override
     public void init() {
         AppManager.getInstance().setGameState(this);
-        m_player = new Player_1();
-        m_backGround = new BackGround(0); //0,1에 따라 배경화면 바뀜
+        m_player = new Player_3();
+        m_backGround = new BackGround(1); //0,1에 따라 배경화면 바뀜
 
         displayWidth = AppManager.getInstance().getDisplayWidth();
     }
@@ -55,10 +56,10 @@ public class GameState implements IState {
         }
 
         //적 미사일
-        for ( int i = m_enemmsList .size( )-1; i >= 0; i--)  {
+        for (int i = m_enemmsList.size() - 1; i >= 0; i--) {
             Missile_Enemy enemms = m_enemmsList.get(i);
             enemms.update(); //미사일 이동
-            if(enemms.state==Missile.STATE_OUT) m_enemmsList.remove(i);
+            if (enemms.state == Missile.STATE_OUT) m_enemmsList.remove(i);
         }
 
         makeEnemy();
@@ -119,12 +120,16 @@ public class GameState implements IState {
     //충돌하면 삭제
     public void checkCollision() {
         //플레이어 미사일과 적의 충돌 처리
+        Iterator<Enemy> iter; //컬렉션을 순회하면서 원소를 삭제할 수 있는 유일하게 안전한 방법
         for (int i = m_pmsList.size() - 1; i >= 0; i--) {
-            for (int j = m_enemyList.size() - 1; j >= 0; j--) {
-                if (CollisionManager.checkBoxToBox(m_pmsList.get(i).m_boundBox, m_enemyList.get(j).m_boundBox)) {
-                    m_pmsList.remove(i);
-                    m_enemyList.remove(j);
-                    return; //일단 루프에서 빠져나옴
+            for (iter = m_enemyList.iterator(); iter.hasNext(); ) {
+                Enemy enemy = iter.next();
+                if (CollisionManager.checkBoxToBox(m_pmsList.get(i).m_boundBox, enemy.m_boundBox)) {
+                    iter.remove();
+                    if (!m_player.evolved) { //진화상태 아니면 플레이어 미사일도 제거
+                        m_pmsList.remove(i);
+                        return; //일단 루프에서 빠져나옴
+                    }
                 }
             }
         }
@@ -141,24 +146,36 @@ public class GameState implements IState {
         }
 
         //적 미사일과 플레이어의 충돌 처리
-        for ( int i = m_enemmsList .size( )-1; i >= 0; i--){
-            if(CollisionManager.checkBoxToBox(m_player.m_boundBox, m_enemmsList.get(i).m_boundBox)){
+        for (int i = m_enemmsList.size() - 1; i >= 0; i--) {
+            if (CollisionManager.checkBoxToBox(m_player.m_boundBox, m_enemmsList.get(i).m_boundBox)) {
                 m_enemmsList.remove(i);
                 m_player.destroyPlayer();
                 if (m_player.getLife() <= 0) System.exit(0);
             }
         }
+
+        //진화 아이템과 충돌 대신 임시로
+        if (m_player.getLife() == 2) changePlayerState();
     }
 
-    public ArrayList<Missile_Player> getPmsList() { return m_pmsList; }
-    public ArrayList<Missile_Enemy> getEnemmsList() { return m_enemmsList; }
+    public ArrayList<Missile_Player> getPmsList() {
+        return m_pmsList;
+    }
 
-    public void changePlayerState(){ //진화석과 충돌하면 진화 -> state 패턴 적용
+    public ArrayList<Missile_Enemy> getEnemmsList() {
+        return m_enemmsList;
+    }
+
+    public void changePlayerState() { //진화석과 충돌하면 진화 -> state 패턴 적용
         m_player = m_player.evolve();
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) { return false; }
+    public boolean onTouchEvent(MotionEvent event) {
+        return false;
+    }
+
     @Override
-    public void destroy() { }
+    public void destroy() {
+    }
 }

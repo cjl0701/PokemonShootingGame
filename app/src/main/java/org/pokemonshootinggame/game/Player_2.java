@@ -5,9 +5,9 @@ import android.graphics.Bitmap;
 import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
 
-public class Player_1 extends Player {
-    public Player_1() {
-        super(AppManager.getInstance().getBitmap(R.drawable.pikachu));
+public class Player_2 extends Player {
+    public Player_2() {
+        super(AppManager.getInstance().getBitmap(R.drawable.kobugi));
         m_life=3;
         m_speed=5;
         m_msSpeed=3;
@@ -27,8 +27,8 @@ public class Player_1 extends Player {
     }
 
     @Override
-    public Player evolve() { return new Player_1_evolved(m_life, m_x,m_y); }
+    public Player evolve() { return new Player_2_evolved(m_life, m_x,m_y); }
 
     @Override
-    public Bitmap getMsBitmap() {return AppManager.getInstance().getBitmap(R.drawable.thunder1); }
+    public Bitmap getMsBitmap() {return AppManager.getInstance().getBitmap(R.drawable.water1); }
 }
