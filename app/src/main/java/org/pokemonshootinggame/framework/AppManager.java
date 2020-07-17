@@ -20,6 +20,7 @@ public class AppManager {
 
     private int displayWidth;
     private int displayHeight;
+    private int playerType;
 
     private AppManager() { super(); } //외부에서 new 연산자로 인스턴스 생성 불가능
 
@@ -42,7 +43,6 @@ public class AppManager {
     public GameView getGameView() {
         return m_gameView;
     }
-
     public void setGameView(GameView gameView) {
         this.m_gameView = gameView;
     }
@@ -50,19 +50,22 @@ public class AppManager {
     public Resources getResources() {
         return m_resources;
     }
-
     public void setResources(Resources resources) {
         this.m_resources = resources;
         displayHeight = m_resources.getDisplayMetrics().heightPixels;
         displayWidth = m_resources.getDisplayMetrics().widthPixels;
     }
-    public GameState getGameState() { return m_gameState; }
 
-    public void setGameState(GameState gameState) { this.m_gameState = gameState; }
     public void setVibrator(Vibrator vibrator) { this.vibrator = vibrator; }
-    public Vibrator getVibrator() { return vibrator; }
-
     public void vibrate(){
         vibrator .vibrate(100);
+    }
+
+    public void setGameState(GameState gameState) { this.m_gameState = gameState; }
+    public GameState getGameState() { return m_gameState; }
+
+    public void setPlayerType(int type) { playerType = type; }
+    public int getPlayerType(){
+        return playerType;
     }
 }

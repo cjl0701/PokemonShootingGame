@@ -14,6 +14,7 @@ public abstract class Player extends GraphicObject {
     public int m_power;
     protected boolean evolved;
     int m_msSpeed; //미사일 스피드
+    int m_msTerm; //미사일 발사 간격
     protected int width;
     protected int height;
     protected long lastShoot = System.currentTimeMillis(); //발사 시간 정보 저장
@@ -33,9 +34,10 @@ public abstract class Player extends GraphicObject {
         m_boundBox.set(m_x+20, m_y+20, m_x +width-20, m_y+height); //이동할 때마다 박스 영역의 값을 갱신
     }
 
-    public abstract void attack(); //캐릭터별 오버라이딩
-    public abstract Player evolve(); //캐릭터별 오버라이딩
-    public abstract Bitmap getMsBitmap();
+    //캐릭터별 오버라이딩
+    public abstract void attack();
+    public abstract Player evolve();
+    public abstract Bitmap getMsBitmap(); //미사일 이미지
 
     public int getLife(){ return m_life; }
     public void addLife(){ m_life++; }

@@ -32,7 +32,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         getHolder().addCallback(this); // SurfaceHolder에 이 클래스에 있는 callback을 등록
 
-        changeGameState(new GameState()); //실행 테스트
+        changeGameState(new IntroState()); //실행 테스트
 
         m_thread = new GameViewThread(getHolder(), this);
     }

@@ -27,7 +27,7 @@ public class GameState implements IState {
     @Override
     public void init() {
         AppManager.getInstance().setGameState(this);
-        m_player = UnitFactory.createPlayer(1); //1,2,3에 따라 플레이어 생성
+        m_player = UnitFactory.createPlayer(AppManager.getInstance().getPlayerType()); //1,2,3에 따라 플레이어 생성
         m_backGround = new BackGround(1); //0,1에 따라 배경화면 바뀜
 
         displayWidth = AppManager.getInstance().getDisplayWidth();

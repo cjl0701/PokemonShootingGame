@@ -12,7 +12,7 @@ public class Player_2_evolved extends Player {
         m_life=life;
         m_power=2;
         m_speed=10;
-        m_msSpeed=10;
+        m_msSpeed=20;
         evolved=true;
         width = m_bitmap.getWidth();
         height = m_bitmap.getHeight();
@@ -20,7 +20,7 @@ public class Player_2_evolved extends Player {
 
     @Override
     public void attack() { //짧은 시간 텀, 여러 갈래로 쏘거나, 충돌에도 사라지지 않고 지속적 공격
-        if (System.currentTimeMillis() - lastShoot >= 2000) {
+        if (System.currentTimeMillis() - lastShoot >= 1000) {
             lastShoot = System.currentTimeMillis();
             AppManager.getInstance().getGameState().getPmsList().add(new Missile_Player(this,m_x+30, m_y-50));
         }
