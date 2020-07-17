@@ -27,7 +27,7 @@ public class GameState implements IState {
     @Override
     public void init() {
         AppManager.getInstance().setGameState(this);
-        m_player = UnitFactory.createPlayer(3); //1,2,3에 따라 플레이어 생성
+        m_player = UnitFactory.createPlayer(1); //1,2,3에 따라 플레이어 생성
         m_backGround = new BackGround(1); //0,1에 따라 배경화면 바뀜
 
         displayWidth = AppManager.getInstance().getDisplayWidth();
@@ -136,17 +136,14 @@ public class GameState implements IState {
 
                 if (CollisionManager.checkBoxToBox(m_pmsList.get(i).m_boundBox, enemy.m_boundBox)) { //boss
                     if (enemy.CreateType == Enemy.TYPE_BOSS) {
-                        if(m_pmsList.get(i).isEvolvedMs()) //진화 상태면 데미지 2배
-                            enemy.m_hp-=2;
-                        else
-                            enemy.m_hp--;
+                        enemy.m_hp -= m_player.m_power;
                         m_pmsList.remove(i);
                         return;
                     } else { //일반 enemy
                         iter.remove(); //적 제거
 
                         //진화상태일 경우 플레이어 미사일은 제거되지 않는다.(보스몹 제외)
-                        if (!m_pmsList.get(i).isEvolvedMs()||enemy.CreateType == Enemy.TYPE_BOSS) {
+                        if (!m_pmsList.get(i).isEvolvedMs() || enemy.CreateType == Enemy.TYPE_BOSS) {
                             m_pmsList.remove(i);
                             return;
                         }
@@ -161,8 +158,9 @@ public class GameState implements IState {
         for (int i = m_enemyList.size() - 1; i >= 0; i--) {
             if (CollisionManager.checkBoxToBox(m_player.m_boundBox, m_enemyList.get(i).m_boundBox)) {
                 //m_explist.add( new EffectExplosion ( m_enemlist .get(j).GetX( ), m_enemlist .get(j).GetY( )));
-                if(m_enemyList.get(i).CreateType!=Enemy.TYPE_BOSS)//보스가 아니면
+                if (m_enemyList.get(i).CreateType != Enemy.TYPE_BOSS)//보스가 아니면
                     m_enemyList.remove(i); //충돌한 적 제거
+
                 m_player.destroyPlayer();
                 AppManager.getInstance().vibrate();
                 if (m_player.getLife() <= 0) System.exit(0);

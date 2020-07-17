@@ -9,6 +9,7 @@ public class Player_2 extends Player {
     public Player_2() {
         super(AppManager.getInstance().getBitmap(R.drawable.kobugi));
         m_life=3;
+        m_power=1;
         m_speed=5;
         m_msSpeed=3;
         evolved=false;

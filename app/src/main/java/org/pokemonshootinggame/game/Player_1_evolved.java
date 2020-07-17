@@ -10,6 +10,7 @@ public class Player_1_evolved extends Player {
         super(AppManager.getInstance().getBitmap(R.drawable.lightu));
         setPosition(x,y);
         m_life=life;
+        m_power=2;
         m_speed=10;
         m_msSpeed=10;
         evolved=true;

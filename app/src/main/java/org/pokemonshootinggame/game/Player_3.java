@@ -9,6 +9,7 @@ public class Player_3 extends Player {
     public Player_3() {
         super(AppManager.getInstance().getBitmap(R.drawable.firi));
         m_life=3;
+        m_power=1;
         m_speed=5;
         m_msSpeed=3;
         evolved=false;

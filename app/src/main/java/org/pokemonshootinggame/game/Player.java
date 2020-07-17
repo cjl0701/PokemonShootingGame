@@ -11,11 +11,13 @@ public abstract class Player extends GraphicObject {
     Rect m_boundBox=new Rect();
     protected int m_life;
     protected int m_speed;
+    public int m_power;
     protected boolean evolved;
     int m_msSpeed; //미사일 스피드
     protected int width;
     protected int height;
     protected long lastShoot = System.currentTimeMillis(); //발사 시간 정보 저장
+    private long lastHittedTime = System.currentTimeMillis();
 
     public Player(Bitmap bitmap) {
         super(bitmap);
@@ -37,5 +39,10 @@ public abstract class Player extends GraphicObject {
 
     public int getLife(){ return m_life; }
     public void addLife(){ m_life++; }
-    public void destroyPlayer(){ m_life--; }
+    public void destroyPlayer() {
+        if (System.currentTimeMillis() - lastHittedTime >= 1000) { // 재히트 판정은 1s뒤에. 그 동안 무적
+            lastHittedTime = System.currentTimeMillis();
+            m_life--;
+        }
+    }
 }
