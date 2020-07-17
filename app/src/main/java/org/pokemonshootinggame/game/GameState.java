@@ -1,13 +1,11 @@
 package org.pokemonshootinggame.game;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
 import org.pokemonshootinggame.framework.IState;
 
@@ -28,7 +26,7 @@ public class GameState implements IState {
     @Override
     public void init() {
         AppManager.getInstance().setGameState(this);
-        m_player = new Player_3();
+        m_player = UnitFactory.createPlayer(3); //1,2,3에 따라 플레이어 생성
         m_backGround = new BackGround(1); //0,1에 따라 배경화면 바뀜
 
         displayWidth = AppManager.getInstance().getDisplayWidth();
@@ -103,11 +101,8 @@ public class GameState implements IState {
         if (System.currentTimeMillis() - lastRegenEnemy >= 3000) { //생성 시점 이후 3초가 넘으면
             lastRegenEnemy = System.currentTimeMillis();
 
-            int enemyType = randEnemy.nextInt(3);
-            Enemy enemy = null;
-            if (enemyType == 0) enemy = new Enemy_1();
-            else if (enemyType == 1) enemy = new Enemy_2();
-            else if (enemyType == 2) enemy = new Enemy_3();
+            int enemyType = randEnemy.nextInt(3)+1; //1,2,3
+            Enemy enemy = UnitFactory.createEnemy(enemyType);
 
             assert enemy != null;
             enemy.setPosition(randEnemy.nextInt(displayWidth - enemy.width), -60);
@@ -126,7 +121,7 @@ public class GameState implements IState {
                 Enemy enemy = iter.next();
                 if (CollisionManager.checkBoxToBox(m_pmsList.get(i).m_boundBox, enemy.m_boundBox)) {
                     iter.remove();
-                    if (!m_player.evolved) { //진화상태 아니면 플레이어 미사일도 제거
+                    if (!m_pmsList.get(i).isEvolvedMs()) { //진화상태 아니면 플레이어 미사일도 제거
                         m_pmsList.remove(i);
                         return; //일단 루프에서 빠져나옴
                     }

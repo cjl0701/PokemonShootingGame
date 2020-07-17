@@ -23,5 +23,9 @@ public class Missile_Player extends Missile {
 
         m_boundBox.set(m_x+10, m_y, m_x +width-10, m_y+height); //이동할 때마다 박스 영역의 값을 갱신
     }
+
+    public boolean isEvolvedMs(){
+        return m_playerState.evolved;
+    }
 }
 
