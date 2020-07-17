@@ -4,11 +4,12 @@ import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
 
 public class Enemy_2 extends Enemy {
-    public Enemy_2() {
-        super(AppManager.getInstance().getBitmap(R.drawable.tempenemy2));
-        m_hp=20;
-        m_speed=2f;
-        width = m_bitmap.getWidth();
-        height = m_bitmap.getHeight();
+    public Enemy_2(int width, int speed) {
+        super(AppManager.getInstance().getResizeBitmap(R.drawable.rocketdan_rosa, width, (int)(width / Enemy.Rosa_ImgProportion)));
+        m_speed = speed;
+        this.width = m_bitmap.getWidth();
+        this.height = m_bitmap.getHeight();
+
+        CreateType = TYPE_NORMAL;
     }
 }

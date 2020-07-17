@@ -3,6 +3,7 @@ package org.pokemonshootinggame.framework;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Vibrator;
 
 import org.pokemonshootinggame.game.GameState;
 
@@ -15,6 +16,7 @@ public class AppManager {
     private GameView m_gameView; //Main GameView
     private Resources m_resources; //Main GameView의 Resources
     private GameState m_gameState;
+    private Vibrator vibrator;
 
     private int displayWidth;
     private int displayHeight;
@@ -57,4 +59,10 @@ public class AppManager {
     public GameState getGameState() { return m_gameState; }
 
     public void setGameState(GameState gameState) { this.m_gameState = gameState; }
+    public void setVibrator(Vibrator vibrator) { this.vibrator = vibrator; }
+    public Vibrator getVibrator() { return vibrator; }
+
+    public void vibrate(){
+        vibrator .vibrate(100);
+    }
 }

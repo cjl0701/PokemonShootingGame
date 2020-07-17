@@ -2,6 +2,7 @@ package org.pokemonshootinggame.framework;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Vibrator;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -27,6 +28,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         AppManager.getInstance().setGameView(this);
         AppManager.getInstance().setResources(getResources());
+        AppManager.getInstance().setVibrator((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE));
 
         getHolder().addCallback(this); // SurfaceHolder에 이 클래스에 있는 callback을 등록
 

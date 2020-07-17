@@ -19,6 +19,7 @@ public class GameState implements IState {
     private ArrayList<Enemy> m_enemyList = new ArrayList<>();
     private ArrayList<Missile_Player> m_pmsList = new ArrayList<>();
     private ArrayList<Missile_Enemy> m_enemmsList = new ArrayList<>();
+    //private ArrayList<EffectExplosion> m_explist = new ArrayList<EffectExplosion>( );
     private long lastRegenEnemy = System.currentTimeMillis();
     private Random randEnemy = new Random();
     private int displayWidth;
@@ -50,7 +51,8 @@ public class GameState implements IState {
         for (int i = m_enemyList.size() - 1; i >= 0; i--) {
             Enemy enemy = m_enemyList.get(i);
             enemy.update(gameTime); //이동
-            if (enemy.state == Enemy.STATE_OUT) m_enemyList.remove(i);
+            if (enemy.state == Enemy.STATE_OUT || enemy.state == Enemy.STATE_DEAD)
+                m_enemyList.remove(i);
         }
 
         //적 미사일
@@ -59,7 +61,11 @@ public class GameState implements IState {
             enemms.update(); //미사일 이동
             if (enemms.state == Missile.STATE_OUT) m_enemmsList.remove(i);
         }
-
+        //폭발 이미지
+//        for (int i = m_explist .size( ) – 1; i >= 0; i--){
+//            EffectExplosion exp = m_explist .get(i);
+//            exp.Update(gameTime);
+//        }
         makeEnemy();
         checkCollision();
     }
@@ -70,6 +76,7 @@ public class GameState implements IState {
         for (Missile_Player pms : m_pmsList) pms.draw(canvas);
         for (Enemy enemy : m_enemyList) enemy.draw(canvas);
         for (Missile_Enemy enemms : m_enemmsList) enemms.draw(canvas);
+        //for (EffecExplosion exp : m_explist)  {  exp.Draw(canvas);  }
         m_player.draw(canvas);
 
         //플레이어의 생명 표시
@@ -101,7 +108,7 @@ public class GameState implements IState {
         if (System.currentTimeMillis() - lastRegenEnemy >= 3000) { //생성 시점 이후 3초가 넘으면
             lastRegenEnemy = System.currentTimeMillis();
 
-            int enemyType = randEnemy.nextInt(3)+1; //1,2,3
+            int enemyType = randEnemy.nextInt(3) + 1; //1,2,3
             Enemy enemy = UnitFactory.createEnemy(enemyType);
 
             assert enemy != null;
@@ -109,6 +116,12 @@ public class GameState implements IState {
             enemy.moveType = randEnemy.nextInt(3);
 
             m_enemyList.add(enemy);
+        }
+        if (m_backGround.getScroll() == 0 && Enemy_boss.BossCnt == 0) { // 스크롤이 가장 위에 도달하면 보스 생성
+            Enemy boss = UnitFactory.createEnemy(4);
+            boss.setPosition((displayWidth - boss.width) / 2, -boss.height);
+
+            m_enemyList.add(boss);
         }
     }
 
@@ -118,33 +131,50 @@ public class GameState implements IState {
         Iterator<Enemy> iter; //컬렉션을 순회하면서 원소를 삭제할 수 있는 유일하게 안전한 방법
         for (int i = m_pmsList.size() - 1; i >= 0; i--) {
             for (iter = m_enemyList.iterator(); iter.hasNext(); ) {
+                //m_explist.add( new EffectExplosion ( m_enemlist .get(j).GetX( ), m_enemlist .get(j).GetY( )));
                 Enemy enemy = iter.next();
-                if (CollisionManager.checkBoxToBox(m_pmsList.get(i).m_boundBox, enemy.m_boundBox)) {
-                    iter.remove();
-                    if (!m_pmsList.get(i).isEvolvedMs()) { //진화상태 아니면 플레이어 미사일도 제거
+
+                if (CollisionManager.checkBoxToBox(m_pmsList.get(i).m_boundBox, enemy.m_boundBox)) { //boss
+                    if (enemy.CreateType == Enemy.TYPE_BOSS) {
+                        if(m_pmsList.get(i).isEvolvedMs()) //진화 상태면 데미지 2배
+                            enemy.m_hp-=2;
+                        else
+                            enemy.m_hp--;
                         m_pmsList.remove(i);
-                        return; //일단 루프에서 빠져나옴
+                        return;
+                    } else { //일반 enemy
+                        iter.remove(); //적 제거
+
+                        //진화상태일 경우 플레이어 미사일은 제거되지 않는다.(보스몹 제외)
+                        if (!m_pmsList.get(i).isEvolvedMs()||enemy.CreateType == Enemy.TYPE_BOSS) {
+                            m_pmsList.remove(i);
+                            return;
+                        }
                     }
                 }
             }
         }
 
-        //캐릭터와 적의 충돌 처리
+        //플레이어와 적의 충돌 처리
         //플레이어의 생명 값을 내리는 destroyPalyer 메서드 호출하고,
         //getLife 메서드를 통해 현재 플레이어의 생명이 0 이면 게임을 종료
         for (int i = m_enemyList.size() - 1; i >= 0; i--) {
             if (CollisionManager.checkBoxToBox(m_player.m_boundBox, m_enemyList.get(i).m_boundBox)) {
-                m_enemyList.remove(i); //충돌한 적 제거
+                //m_explist.add( new EffectExplosion ( m_enemlist .get(j).GetX( ), m_enemlist .get(j).GetY( )));
+                if(m_enemyList.get(i).CreateType!=Enemy.TYPE_BOSS)//보스가 아니면
+                    m_enemyList.remove(i); //충돌한 적 제거
                 m_player.destroyPlayer();
+                AppManager.getInstance().vibrate();
                 if (m_player.getLife() <= 0) System.exit(0);
             }
         }
 
-        //적 미사일과 플레이어의 충돌 처리
+        //플레이어와 적 미사일의 충돌 처리
         for (int i = m_enemmsList.size() - 1; i >= 0; i--) {
             if (CollisionManager.checkBoxToBox(m_player.m_boundBox, m_enemmsList.get(i).m_boundBox)) {
                 m_enemmsList.remove(i);
                 m_player.destroyPlayer();
+                AppManager.getInstance().vibrate();
                 if (m_player.getLife() <= 0) System.exit(0);
             }
         }
@@ -172,5 +202,9 @@ public class GameState implements IState {
 
     @Override
     public void destroy() {
+    }
+
+    public Player getPlayer() {
+        return m_player;
     }
 }
