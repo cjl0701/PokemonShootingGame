@@ -44,10 +44,10 @@ public class IntroState implements IState {
 
     @Override
     public void render(Canvas canvas) {
-        int width = canvas.getWidth();
+        int width = AppManager.getInstance().getDisplayWidth();
         int width_player = player_3.getWidth();
         int height_player = player_3.getHeight();
-        // Cursor cursor = db.query(  new String[]{ "name", "score" },null, null, null, null, "socre");
+        //Cursor cursor = db.query(  new String[]{ "name", "score" },null, null, null, null, "socre");
         //cursor.moveToFirst();
 
         Paint paint = new Paint();

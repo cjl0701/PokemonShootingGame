@@ -1,8 +1,13 @@
 package org.pokemonshootinggame.game;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -23,6 +28,56 @@ public class GameState implements IState {
     private long lastRegenEnemy = System.currentTimeMillis();
     private Random randEnemy = new Random();
     private int displayWidth;
+    SensorManager sensorManager;
+
+    private class SensorHandler implements SensorEventListener {
+        private int verticalMax = AppManager.getInstance().getDisplayHeight() - m_player.getHeight();
+        private int HorizontalMax = AppManager.getInstance().getDisplayWidth() - m_player.getWidth();
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) { //센서의 값이 바뀔 때 호출
+            //받아온 센서 값을 처리
+            synchronized (this) {
+                switch (sensorEvent.sensor.getType()) {
+                    case Sensor.TYPE_ORIENTATION:
+                        //float heading = sensorEvent.values[0];
+                        float pitch = sensorEvent.values[1];
+                        float roll = sensorEvent.values[2];
+
+                        //플레이어 움직이기
+                        m_player.setX((int) (m_player.getX()-roll));
+                        m_player.setY((int) (m_player.getY()-pitch));
+
+                        //화면 크기에 대한 처리
+                        if (m_player.getX() <= 0) m_player.setX(0);
+                        if (m_player.getY() <= 0) m_player.setY(0);
+                        if (m_player.getX() >= HorizontalMax) m_player.setX(HorizontalMax);
+                        if (m_player.getY() >= verticalMax) m_player.setY(verticalMax);
+                        break;
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) { } //센서의 정확도 값이 바뀔 때 호출
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //키 입력에 따른 플레이어 이동
+        int x = m_player.getX();
+        int y = m_player.getY();
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
+            m_player.setPosition(x - m_player.m_speed, y);
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+            m_player.setPosition(x + m_player.m_speed, y);
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP)
+            m_player.setPosition(x, y - m_player.m_speed);
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
+            m_player.setPosition(x, y + m_player.m_speed);
+
+        return true;
+    }
 
     @Override
     public void init() {
@@ -31,6 +86,11 @@ public class GameState implements IState {
         m_backGround = new BackGround(1); //0,1에 따라 배경화면 바뀜
 
         displayWidth = AppManager.getInstance().getDisplayWidth();
+        //Device에서 SensorManager를 가져옴
+        sensorManager = (SensorManager) AppManager.getInstance().getGameView().getContext().getSystemService((Context.SENSOR_SERVICE));
+
+        //SensorManager에 Listener로 생성한 클래스를 등록
+        sensorManager.registerListener(new SensorHandler(), sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
@@ -84,24 +144,6 @@ public class GameState implements IState {
         paint.setTextSize(100);
         paint.setColor(Color.BLACK);
         canvas.drawText("남은 목숨: " + m_player.getLife(), 0, 100, paint);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //키 입력에 따른 플레이어 이동
-        int x = m_player.getX();
-        int y = m_player.getY();
-
-        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
-            m_player.setPosition(x - m_player.m_speed, y);
-        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
-            m_player.setPosition(x + m_player.m_speed, y);
-        if (keyCode == KeyEvent.KEYCODE_DPAD_UP)
-            m_player.setPosition(x, y - m_player.m_speed);
-        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
-            m_player.setPosition(x, y + m_player.m_speed);
-
-        return true;
     }
 
     public void makeEnemy() {
