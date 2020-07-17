@@ -13,6 +13,8 @@ public class SpriteAnimation extends GraphicObject {
     private int m_currentFrame; //최근 프레임
     private int m_spriteWidth; //개별 프레임의 넓이
     private int m_spriteHeight; //개별 프레임의 높이
+    protected boolean mbReplay = true; //반복 여부 판별
+    protected boolean mbEnd = false; //애니메이션 종료 정보 저장
 
     public SpriteAnimation(Bitmap bitmap) {
         super(bitmap);
@@ -40,15 +42,25 @@ public class SpriteAnimation extends GraphicObject {
 
     //시간이 지남에 따라 그려야 하는 프레임을 바꿈
     public void update(long gameTime) {
-        // 게임 상의 시간을 받아 이전에 그렸던 시간과 비교해서 다음 이미지를 그릴 시간이 되면 프레임을 변경
-        if (gameTime > m_frameTimer + m_fps) {
-            m_frameTimer = gameTime;
-            m_currentFrame += 1;
-            //프레임의 순환
-            if (m_currentFrame >= m_iFrames) m_currentFrame = 0;
+        if (!mbEnd) { //애니메이션이 종료되지 않았다면
+            //게임 상의 시간을 받아 이전에 그렸던 시간과 비교해서 다음 이미지를 그릴 시간이 되면 프레임을 변경
+            if (gameTime > m_frameTimer + m_fps) {
+                m_frameTimer = gameTime;
+                m_currentFrame += 1;
+
+                //프레임의 순환
+                if (m_currentFrame >= m_iFrames) {
+                    if (mbReplay) //mbReplay가 true일 때만 마지막 프레임까지 도달했을 때 다시 첫 번째 프레임으로 바꿔 애니메이션을 반복
+                        m_currentFrame = 0;
+                    else //true가 아닐 때 애니메이션이 종료되면 mbEnd를 true로 변경해서 애니메이션이 종료되었다는 정보를 저장
+                        mbEnd = true;
+                }
+            }
+            //그릴 영역의 이동
+            m_rect.left = m_currentFrame * m_spriteWidth;
+            m_rect.right = m_rect.left + m_spriteWidth;
         }
-        //그릴 영역의 이동
-        m_rect.left = m_currentFrame * m_spriteWidth;
-        m_rect.right = m_rect.left + m_spriteWidth;
     }
+
+    public boolean getAnimationEnd(){ return mbEnd; }
 }
