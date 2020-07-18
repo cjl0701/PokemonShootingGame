@@ -28,6 +28,11 @@ public class Player_3 extends Player {
     }
 
     @Override
+    public void specialAttack() {
+
+    }
+
+    @Override
     public Player evolve() { return new Player_3_evolved(m_life, m_x,m_y); }
 
     @Override

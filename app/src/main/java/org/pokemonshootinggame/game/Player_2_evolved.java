@@ -27,6 +27,11 @@ public class Player_2_evolved extends Player {
     }
 
     @Override
+    public void specialAttack() {
+
+    }
+
+    @Override
     public Player evolve() {
         return this;
     } //진화x

@@ -25,8 +25,11 @@ public class GameState implements IState {
     private ArrayList<Missile_Player> m_pmsList = new ArrayList<>();
     private ArrayList<Missile_Enemy> m_enemmsList = new ArrayList<>();
     private ArrayList<EffectExplosion> m_expList = new ArrayList<EffectExplosion>( );
-    private long lastRegenEnemy = System.currentTimeMillis();
-    private Random randEnemy = new Random();
+    private ArrayList<Item> m_itemList = new ArrayList<>();
+    private ArrayList<SpecialAttackType1> m_spList = new ArrayList<>();
+    private long lastRegenEnemy_enemy = System.currentTimeMillis();
+    private long lastRegenEnemy_item = System.currentTimeMillis();
+    private Random rand = new Random();
     private int displayWidth;
     SensorManager sensorManager; //센서 이동
 
@@ -42,6 +45,25 @@ public class GameState implements IState {
 
         //SensorManager에 Listener로 생성한 클래스를 등록
         sensorManager.registerListener(new SensorHandler(), sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    @Override
+    public void render(Canvas canvas) {
+        m_backGround.draw(canvas);
+        for (Missile_Player pms : m_pmsList) pms.draw(canvas);
+        for (Enemy enemy : m_enemyList) enemy.draw(canvas);
+        for (Missile_Enemy enemms : m_enemmsList) enemms.draw(canvas);
+        for (EffectExplosion exp : m_expList) exp.draw(canvas);
+        for(Item item : m_itemList) item.draw(canvas);
+        for (SpecialAttackType1 specialAttack : m_spList) specialAttack.draw(canvas);
+        m_player.draw(canvas);
+
+        //플레이어의 생명 표시
+        Paint paint = new Paint();
+        paint.setTextSize(80);
+        paint.setColor(Color.BLACK);
+        canvas.drawText("남은 목숨: " + m_player.getLife(), 0, 100, paint);
+        canvas.drawText("필살기 개수: "+ m_spList.size(), 0, 200, paint);
     }
 
     @Override
@@ -80,48 +102,25 @@ public class GameState implements IState {
             if(exp.getAnimationEnd()) m_expList.remove(i);
         }
 
+        //아이템
+        for(int i=m_itemList.size()-1; i>=0; i--){
+            Item item = m_itemList.get(i);
+            item.update(gameTime);
+            if(item.bOut == true) m_itemList.remove(i);
+        }
+
+        //Special attack
+        for (int i = m_spList.size( ) -1; i >= 0; i--){
+            SpecialAttackType1 specialAttack = m_spList.get(i);
+            specialAttack.update(gameTime);
+            if(specialAttack.getAnimationEnd()) m_spList.remove(i);
+        }
+
         makeEnemy();
         checkCollision();
     }
 
-    @Override
-    public void render(Canvas canvas) {
-        m_backGround.draw(canvas);
-        for (Missile_Player pms : m_pmsList) pms.draw(canvas);
-        for (Enemy enemy : m_enemyList) enemy.draw(canvas);
-        for (Missile_Enemy enemms : m_enemmsList) enemms.draw(canvas);
-        for (EffectExplosion exp : m_expList) exp.draw(canvas);
-        m_player.draw(canvas);
-
-        //플레이어의 생명 표시
-        Paint paint = new Paint();
-        paint.setTextSize(100);
-        paint.setColor(Color.BLACK);
-        canvas.drawText("남은 목숨: " + m_player.getLife(), 0, 100, paint);
-    }
-
-    public void makeEnemy() {
-        if (System.currentTimeMillis() - lastRegenEnemy >= 3000) { //생성 시점 이후 3초가 넘으면
-            lastRegenEnemy = System.currentTimeMillis();
-
-            int enemyType = randEnemy.nextInt(3) + 1; //1,2,3
-            Enemy enemy = UnitFactory.createEnemy(enemyType);
-
-            assert enemy != null;
-            enemy.setPosition(randEnemy.nextInt(displayWidth - enemy.width), -60);
-            enemy.moveType = randEnemy.nextInt(3);
-
-            m_enemyList.add(enemy);
-        }
-        if (m_backGround.getScroll() == 0 && Enemy_boss.BossCnt == 0) { // 스크롤이 가장 위에 도달하면 보스 생성
-            Enemy boss = UnitFactory.createEnemy(4);
-            boss.setPosition((displayWidth - boss.width) / 2, -boss.height);
-
-            m_enemyList.add(boss);
-        }
-    }
-
-    //충돌하면 삭제
+    //충돌 처리
     public void checkCollision() {
         //플레이어 미사일과 적의 충돌 처리
         Iterator<Enemy> iter; //컬렉션을 순회하면서 원소를 삭제할 수 있는 유일하게 안전한 방법
@@ -138,6 +137,8 @@ public class GameState implements IState {
                     //일반 enemy
                     else {
                         m_expList.add(new EffectExplosion(enemy.getX(),enemy.getY()));
+                        makeItem(m_itemList, enemy.getX(), enemy.getY());
+                        //m_itemList.add(new ItemAddLife(enemy.getX(), enemy.getY()));
                         iter.remove(); //적 제거
                         //진화상태일 경우 플레이어 미사일은 제거되지 않는다.
                         if (!m_pmsList.get(i).isEvolvedMs()) {
@@ -174,8 +175,51 @@ public class GameState implements IState {
             }
         }
 
-        //진화 아이템과 충돌 대신 임시로
-        if (m_player.getLife() == 2) changePlayerState();
+        for(int i =m_itemList.size()-1; i>=0; i--){
+            if(CollisionManager.checkBoxToBox(m_player.m_boundBox, m_itemList.get(i).m_boundBox)){
+                m_itemList.get(i).getItem();
+                m_itemList.remove(i);
+            }
+        }
+        //진화 아이템과 충돌 대신 임시로 /x 계속 호출됨
+//        if (m_player.getLife() == 2) {
+//            changePlayerState();
+//            m_spList.add(new SpecialAttackType1());
+//        }
+    }
+
+    public void makeEnemy() {
+        if (System.currentTimeMillis() - lastRegenEnemy_enemy >= 3000) { //생성 시점 이후 3초가 넘으면
+            lastRegenEnemy_enemy = System.currentTimeMillis();
+
+            int enemyType = rand.nextInt(3) + 1; //1,2,3
+            Enemy enemy = UnitFactory.createEnemy(enemyType);
+
+            assert enemy != null;
+            enemy.setPosition(rand.nextInt(displayWidth - enemy.width), -60);
+            enemy.moveType = rand.nextInt(3);
+
+            m_enemyList.add(enemy);
+        }
+        if (m_backGround.getScroll() == 0 && Enemy_boss.BossCnt == 0) { // 스크롤이 가장 위에 도달하면 보스 생성
+            Enemy boss = UnitFactory.createEnemy(4);
+            boss.setPosition((displayWidth - boss.width) / 2, -boss.height);
+
+            m_enemyList.add(boss);
+        }
+    }
+
+    public void makeItem(ArrayList<Item> itemList, int x, int y){
+        if (System.currentTimeMillis() - lastRegenEnemy_item >= 10000) { //생성 시점 이후 10초가 넘으면
+            lastRegenEnemy_item = System.currentTimeMillis();
+
+            int itemType = rand.nextInt(2)+1;
+            Item item = UnitFactory.createItem(itemType, x, y);
+
+            assert  item != null;
+            //item.moveType = rand.nextInt(3);
+            m_itemList.add(item);
+        }
     }
 
     private class SensorHandler implements SensorEventListener {
@@ -223,6 +267,8 @@ public class GameState implements IState {
             m_player.setPosition(x, y - m_player.m_speed);
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
             m_player.setPosition(x, y + m_player.m_speed);
+//        if (keyCode == KeyEvent.KEYCODE_SPACE)
+//            m_pmsList.add(new Missile_Player(x, y + 30)); //미사일이 플레이어 위에
 
         return true;
     }

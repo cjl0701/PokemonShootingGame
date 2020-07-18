@@ -28,4 +28,15 @@ public class UnitFactory {
 
         return enemy;
     }
+
+    public static Item createItem(int type, int x, int y) {
+        Item item = null;
+
+        if(type == 1)
+            item = new ItemAddLife(x, y);
+        else if(type ==2 )
+            item = new ItemEvolution(x, y);
+
+        return item;
+    }
 }

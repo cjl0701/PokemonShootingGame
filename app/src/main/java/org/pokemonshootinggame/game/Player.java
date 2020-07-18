@@ -36,6 +36,7 @@ public abstract class Player extends GraphicObject {
 
     //캐릭터별 오버라이딩
     public abstract void attack();
+    public abstract void specialAttack(); //편의상 일단 동일하게 구현
     public abstract Player evolve();
     public abstract Bitmap getMsBitmap(); //미사일 이미지
 
