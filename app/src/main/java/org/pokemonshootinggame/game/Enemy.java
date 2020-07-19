@@ -26,6 +26,8 @@ public class Enemy extends GraphicObject {
     public static final int MOVE_PATTERN_1 = 0;
     public static final int MOVE_PATTERN_2 = 1;
     public static final int MOVE_PATTERN_3 = 2;
+    public static final int MOVE_PATTERN_4 = 3;
+    public static final int MOVE_PATTERN_5 = 4;
     protected int moveType;
     private int displayHeight;
     private int tp; //패턴의 움직임이 바뀌는 지점
@@ -101,6 +103,25 @@ public class Enemy extends GraphicObject {
                     m_y += m_speed;
                 }
             }
+            else if (moveType == MOVE_PATTERN_4) {
+                if (m_y <= tp) {
+                    m_x += m_speed;
+                    m_y += m_speed;
+                }
+                else {
+                    m_x -= m_speed;
+                    m_y += m_speed;
+                }
+            } else if (moveType == MOVE_PATTERN_5) {
+                if (m_y <= tp) {
+                    m_x -= m_speed;
+                    m_y += m_speed;
+                }
+                else {
+                    m_x += m_speed;
+                    m_y += m_speed;
+                }
+            }
         }
         else if (CreateType == TYPE_BOSS) { // 보스 이동 경로
             if (m_y <= 70) m_y += m_speed;
@@ -112,16 +133,17 @@ public class Enemy extends GraphicObject {
     //이전에 발사했던 시간을 저장해서 현재 시간과 이전에 발사했던 시간을 비교 해서 시간이 어느정도 흐르면 미사일을 다시 발사
     void attack() {
         Random random = new Random();
+        int term = 3000 / AppManager.getInstance().getStage(); //3,2,1
         if (CreateType == TYPE_NORMAL) { // 일반 몬스터이면
             //일정 간격을 두고 미사일 객체를 생성하고, GameState의 멤버 변수인 enemmlist에 추가
             //이를 위해 GameState를 AppManager에 추가해서 GameState를 전역 변수처럼 접근할 수 있게
-            if (System.currentTimeMillis() - lastShoot_Normal >= random.nextInt(4000)+3000) { // 3s~7s마다 발사
+            if (System.currentTimeMillis() - lastShoot_Normal >= random.nextInt(term)+3000) { // 1R: 3s~6s마다 발사 3R: 1s~4s
                 lastShoot_Normal = System.currentTimeMillis();
                 AppManager.getInstance().getGameState().getEnemmsList().add(new Missile_Enemy(m_x+((this.width)-100)/2, m_y+height/2, 60, false));
             }
         }
         else if (CreateType == TYPE_BOSS && state == STATE_STOP) { // 보스이면
-            if (System.currentTimeMillis() - lastShoot_Boss >= random.nextInt(3000)+5000) { // 5s~8s마다 발사
+            if (System.currentTimeMillis() - lastShoot_Boss >= random.nextInt(term)+4000) { // 4s~7s마다 발사
                 lastShoot_Boss = System.currentTimeMillis();
                 AppManager.getInstance().getGameState().getEnemmsList().add(new Missile_Enemy(m_x+((this.width)-200)/2, m_y+height/2, 120, true));
             }

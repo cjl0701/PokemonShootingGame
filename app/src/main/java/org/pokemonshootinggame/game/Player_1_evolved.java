@@ -20,15 +20,10 @@ public class Player_1_evolved extends Player {
 
     @Override
     public void attack() { //짧은 시간 텀, 여러 갈래로 쏘거나, 충돌에도 사라지지 않고 지속적 공격
-        if (System.currentTimeMillis() - lastShoot >= 1000) {
+        if (System.currentTimeMillis() - lastShoot >= 700) {
             lastShoot = System.currentTimeMillis();
             AppManager.getInstance().getGameState().getPmsList().add(new Missile_Player(this,m_x+30, m_y-50));
         }
-    }
-
-    @Override
-    public void specialAttack() {
-
     }
 
     @Override
@@ -38,4 +33,13 @@ public class Player_1_evolved extends Player {
 
     @Override
     public Bitmap getMsBitmap() {return AppManager.getInstance().getBitmap(R.drawable.thunder2); }
+
+    @Override
+    public SpecialAttack getSpecial() {
+        return new SpecialAttack(AppManager.getInstance().getBitmap(R.drawable.thunderbomb));
+    }
+
+    @Override
+    public void specialAttack() {
+    }
 }

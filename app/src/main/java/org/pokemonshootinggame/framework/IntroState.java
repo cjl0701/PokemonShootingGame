@@ -7,6 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -15,57 +17,87 @@ import org.pokemonshootinggame.game.BackGround;
 //import org.pokemonshootinggame.game.DBHelper;
 import org.pokemonshootinggame.game.GameState;
 import org.pokemonshootinggame.framework.AppManager;
+import org.pokemonshootinggame.game.GameState_Stage1;
 import org.pokemonshootinggame.game.Player_1;
 
 public class IntroState implements IState {
     private BackGround m_backGround;
 
     Bitmap bitmap;
+    Bitmap bitmap2;
     Bitmap player_1;
     Bitmap player_2;
     Bitmap player_3;
-    int x, y;
-    // DBHelper db = AppManager.getInstance().getGameActivity().getDB();
 
+    int x, y;
+    int score;
+    int frequency;
+    SQLiteDatabase db = AppManager.getInstance().getDBHelper().getWritableDatabase(); //gameview에서 생성한 객채 가져오기
 
     @Override
     public void init() {
-        bitmap =  AppManager.getInstance().getBitmap(R.drawable.background_pkm);
-        player_1 =  AppManager.getInstance().getBitmap(R.drawable.player_1);
-        player_2 =  AppManager.getInstance().getBitmap(R.drawable.player_2);
-        player_3 =  AppManager.getInstance().getBitmap(R.drawable.player_3);
+        bitmap = AppManager.getInstance().getBitmap(R.drawable.background_pkm);
+        bitmap2 = AppManager.getInstance().getBitmap(R.drawable.background_pkm2);
+
+        player_1 = AppManager.getInstance().getBitmap(R.drawable.player_1);
+        player_2 = AppManager.getInstance().getBitmap(R.drawable.player_2);
+        player_3 = AppManager.getInstance().getBitmap(R.drawable.player_3);
+
+        // db 데이터를 가져오는 부분
+        try {
+            Cursor cursor = db.query("RankBoard", new String[]{"PK", "score"}, null, null, null, null, "score");
+
+            if (cursor.moveToFirst() == false) {
+                score = 0;
+                frequency = 0;
+            } else {
+                cursor.moveToLast();
+                frequency = cursor.getCount();
+                score = cursor.getInt(1);
+            }
+        } catch (Exception e3) {
+            System.out.println("실패 : " + e3);
+        }
+        //SoundManager.getInstance().addSound(1, R.raw.introbackground);
+        //SoundManager.getInstance().play(1);
     }
 
     @Override
-    public void destroy() { }
+    public void destroy() {
+    }
 
     @Override
-    public void update() { }
+    public void update() {
+    }
 
     @Override
     public void render(Canvas canvas) {
         int width = AppManager.getInstance().getDisplayWidth();
+        int height = AppManager.getInstance().getDisplayHeight();
         int width_player = player_3.getWidth();
         int height_player = player_3.getHeight();
-        //Cursor cursor = db.query(  new String[]{ "name", "score" },null, null, null, null, "socre");
-        //cursor.moveToFirst();
+
 
         Paint paint = new Paint();
         paint.setTextSize(100);
         paint.setColor(Color.BLACK);
 
         bitmap = Bitmap.createScaledBitmap(bitmap, width, 400, true);
-        player_1 =Bitmap.createScaledBitmap(player_1, width_player, height_player, true);
+        bitmap2 = Bitmap.createScaledBitmap(bitmap2, width, height, true);
+
+        player_1 = Bitmap.createScaledBitmap(player_1, width_player, height_player, true);
         player_2 = Bitmap.createScaledBitmap(player_2, width_player, height_player, true);
-        canvas.drawColor(Color.WHITE);
+//        canvas.drawColor(Color.WHITE);
+        canvas.drawBitmap(bitmap2, 0, 0, null);
         canvas.drawBitmap(bitmap, 0, 50, null);
-        canvas.drawText("플레이어 선택"+width/6 , 270, 650, paint);
+        canvas.drawText("플레이어 선택", 270, 650, paint);
 
-        canvas.drawBitmap(player_1,width/6-120, 800,null);
-        canvas.drawBitmap(player_2,width/6*3-120, 800,null);
-        canvas.drawBitmap(player_3,width/6*5-120, 800,null);
+        canvas.drawBitmap(player_1, width / 6 - 120, 800, null);
+        canvas.drawBitmap(player_2, width / 6 * 3 - 120, 800, null);
+        canvas.drawBitmap(player_3, width / 6 * 5 - 120, 800, null);
 
-        canvas.drawText("개인 최고 기록 :  "/*+cursor.getString(1)*/ , 100, 1300, paint);
+        canvas.drawText("개인 최고 기록 :  " + score, 100, 1300, paint);
+        canvas.drawText("시도 횟수 :" + frequency, 100, 1500, paint);
 
 
     }
@@ -77,36 +109,33 @@ public class IntroState implements IState {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Canvas canvas= new Canvas();
-        int width = canvas.getWidth();
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            Canvas canvas = new Canvas();
+            int width = canvas.getWidth();
 
-        int width_player = player_1.getWidth();
-        int height_player = player_1.getHeight();
+            int width_player = player_1.getWidth();
+            int height_player = player_1.getHeight();
 
-        int px = (int)event.getX( );
-        int py = (int)event.getY( );
+            int px = (int) event.getX();
+            int py = (int) event.getY();
 
-        Rect button_1 = new Rect(180-120,800,180-120+width_player,800+height_player);
-        Rect button_2 = new Rect(180*3-120,800,180*3-120+width_player,800+height_player);
-        Rect button_3 = new Rect(180*5-120,800,180*5-120+width_player,800+height_player);
+            Rect button_1 = new Rect(180 - 120, 800, 180 - 120 + width_player, 800 + height_player);
+            Rect button_2 = new Rect(180 * 3 - 120, 800, 180 * 3 - 120 + width_player, 800 + height_player);
+            Rect button_3 = new Rect(180 * 5 - 120, 800, 180 * 5 - 120 + width_player, 800 + height_player);
 
-        if(button_1.contains(px,py))
-        {
-            AppManager.getInstance().setPlayerType(1);
-            AppManager.getInstance().getGameView().changeGameState(new GameState());
+            if (button_1.contains(px, py)) {
+                AppManager.getInstance().setPlayerType(1);
+                AppManager.getInstance().getGameView().changeGameState(new GameState_Stage1());
+            }
+            if (button_2.contains(px, py)) {
+                AppManager.getInstance().setPlayerType(2);
+                AppManager.getInstance().getGameView().changeGameState(new GameState_Stage1());
+            }
+            if (button_3.contains(px, py)) {
+                AppManager.getInstance().setPlayerType(3);
+                AppManager.getInstance().getGameView().changeGameState(new GameState_Stage1());
+            }
         }
-        if(button_2.contains(px,py))
-        {
-            AppManager.getInstance().setPlayerType(2);
-            AppManager.getInstance().getGameView().changeGameState(new GameState());
-        }
-        if(button_3.contains(px,py))
-        {
-            //AppManager.getInstance().getGameState().setPlayer(new Player_1()); //Player_1,2,3가 나오면 수정 필요!!!!!!!!!!!
-            AppManager.getInstance().setPlayerType(3);
-            AppManager.getInstance().getGameView().changeGameState(new GameState());
-        }
-
         return true;
     }
 }

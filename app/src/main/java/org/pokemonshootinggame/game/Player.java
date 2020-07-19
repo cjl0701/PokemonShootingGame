@@ -48,4 +48,6 @@ public abstract class Player extends GraphicObject {
             m_life--;
         }
     }
+
+    public abstract SpecialAttack getSpecial();
 }

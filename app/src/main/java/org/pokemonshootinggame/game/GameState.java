@@ -1,6 +1,7 @@
 package org.pokemonshootinggame.game;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -8,36 +9,53 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
+import org.pokemonshootinggame.framework.ClearState;
+import org.pokemonshootinggame.framework.EndState;
 import org.pokemonshootinggame.framework.IState;
+import org.pokemonshootinggame.framework.SoundManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
 public class GameState implements IState {
-    private Player m_player;
-    private BackGround m_backGround;
-    private ArrayList<Enemy> m_enemyList = new ArrayList<>();
-    private ArrayList<Missile_Player> m_pmsList = new ArrayList<>();
-    private ArrayList<Missile_Enemy> m_enemmsList = new ArrayList<>();
-    private ArrayList<EffectExplosion> m_expList = new ArrayList<EffectExplosion>( );
-    private ArrayList<Item> m_itemList = new ArrayList<>();
-    private ArrayList<SpecialAttackType1> m_spList = new ArrayList<>();
-    private long lastRegenEnemy_enemy = System.currentTimeMillis();
-    private long lastRegenEnemy_item = System.currentTimeMillis();
-    private Random rand = new Random();
-    private int displayWidth;
-    SensorManager sensorManager; //센서 이동
+    protected Player m_player;
+    protected BackGround m_backGround;
+    protected ArrayList<Enemy> m_enemyList = new ArrayList<>();
+    protected ArrayList<Missile_Player> m_pmsList = new ArrayList<>();
+    protected ArrayList<Missile_Enemy> m_enemmsList = new ArrayList<>();
+    protected ArrayList<EffectExplosion> m_expList = new ArrayList<EffectExplosion>( );
+    protected ArrayList<Item> m_itemList = new ArrayList<>();
+    protected ArrayList<SpecialAttack> m_spList = new ArrayList<>();
+    protected boolean m_useOfSp = false; //special attck 사용
+    protected long lastRegenEnemy = System.currentTimeMillis();
+    protected long lastRegenItem = System.currentTimeMillis();
+    protected long lastSpDamage = System.currentTimeMillis(); //Special Attack 시점
+    protected Random rand = new Random();
+    protected int displayWidth;
+    protected SensorManager sensorManager; //센서 이동
+    protected int m_count=0;
+    protected static final int STAGE1 = 1;
+    protected static final int STAGE2 = 2;
+    protected static final int STAGE3 = 3;
+    protected int m_stage;
+    protected static final int SOUND_EFFECT_1 = 1;
+    protected static final int SOUND_EFFECT_2 = 2;
+    protected static final int SOUND_EFFECT_3 = 2;
 
     @Override
     public void init() {
-        AppManager.getInstance().setGameState(this);
-        m_player = UnitFactory.createPlayer(AppManager.getInstance().getPlayerType()); //1,2,3에 따라 플레이어 생성
-        m_backGround = new BackGround(1); //0,1에 따라 배경화면 바뀜
+        //AppManager.getInstance().setGameState(this);
+        AppManager.getInstance().setStage(m_stage);
+        UnitFactory.updateStage();
+        m_player = UnitFactory.createPlayer(AppManager.getInstance().getPlayerType()); //1,2,3에 따라 플레이어 생성, 싱글톤 패턴
+        m_backGround = new BackGround(m_stage % 2); //0,1에 따라 배경화면 바뀜
 
         displayWidth = AppManager.getInstance().getDisplayWidth();
         //Device에서 SensorManager를 가져옴
@@ -45,27 +63,22 @@ public class GameState implements IState {
 
         //SensorManager에 Listener로 생성한 클래스를 등록
         sensorManager.registerListener(new SensorHandler(), sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+
+
+        /*필살기 test*/
+//        chargeSpecial();
+//        chargeSpecial();
+//        chargeSpecial();
+//        chargeSpecial();
+//        chargeSpecial();
+//        chargeSpecial();
+
+        SoundManager.getInstance().addSound(SOUND_EFFECT_1, R.raw.effect1);
+        SoundManager.getInstance().addSound(SOUND_EFFECT_2, R.raw.effect2);
+        SoundManager.getInstance().addSound(SOUND_EFFECT_3, R.raw.effect3);
     }
 
-    @Override
-    public void render(Canvas canvas) {
-        m_backGround.draw(canvas);
-        for (Missile_Player pms : m_pmsList) pms.draw(canvas);
-        for (Enemy enemy : m_enemyList) enemy.draw(canvas);
-        for (Missile_Enemy enemms : m_enemmsList) enemms.draw(canvas);
-        for (EffectExplosion exp : m_expList) exp.draw(canvas);
-        for(Item item : m_itemList) item.draw(canvas);
-        for (SpecialAttackType1 specialAttack : m_spList) specialAttack.draw(canvas);
-        m_player.draw(canvas);
-
-        //플레이어의 생명 표시
-        Paint paint = new Paint();
-        paint.setTextSize(80);
-        paint.setColor(Color.BLACK);
-        canvas.drawText("남은 목숨: " + m_player.getLife(), 0, 100, paint);
-        canvas.drawText("필살기 개수: "+ m_spList.size(), 0, 200, paint);
-    }
-
+    //update->render
     @Override
     public void update() {
         //애니메이션 동작을 위해
@@ -84,8 +97,12 @@ public class GameState implements IState {
         for (int i = m_enemyList.size() - 1; i >= 0; i--) {
             Enemy enemy = m_enemyList.get(i);
             enemy.update(gameTime); //이동
-            if (enemy.state == Enemy.STATE_OUT || enemy.state == Enemy.STATE_DEAD)
+            if (enemy.state == Enemy.STATE_OUT)
                 m_enemyList.remove(i);
+            if(enemy.state == Enemy.STATE_DEAD) {//보스 클리어
+                SoundManager.getInstance().play(SOUND_EFFECT_2);
+                AppManager.getInstance().getGameView().changeGameState(new ClearState());
+            }
         }
 
         //적 미사일
@@ -109,15 +126,40 @@ public class GameState implements IState {
             if(item.bOut == true) m_itemList.remove(i);
         }
 
-        //Special attack
-        for (int i = m_spList.size( ) -1; i >= 0; i--){
-            SpecialAttackType1 specialAttack = m_spList.get(i);
-            specialAttack.update(gameTime);
-            if(specialAttack.getAnimationEnd()) m_spList.remove(i);
+        //Special Attack 사용
+        if(m_useOfSp) {
+            SpecialAttack sp = m_spList.get(0);
+            sp.setPosition(m_player.getX()+m_player.getWidth()/2-sp.getWidth()/4/2, m_player.getY()-sp.getHeight());
+            sp.update(gameTime);
+            if (sp.getAnimationEnd()) {
+                m_spList.remove(0);
+                m_useOfSp=false;
+            }
         }
 
         makeEnemy();
         checkCollision();
+    }
+
+    @Override
+    public void render(Canvas canvas) {
+        m_backGround.draw(canvas);
+        for (Missile_Player pms : m_pmsList) pms.draw(canvas);
+        for (Enemy enemy : m_enemyList) enemy.draw(canvas);
+        for (Missile_Enemy enemms : m_enemmsList) enemms.draw(canvas);
+        for (EffectExplosion exp : m_expList) exp.draw(canvas);
+        for(Item item : m_itemList) item.draw(canvas);
+        m_player.draw(canvas);
+
+        if(m_useOfSp) //Special Attack 사용
+            m_spList.get(0).draw(canvas);
+
+        //플레이어의 생명 표시
+        Paint paint = new Paint();
+        paint.setTextSize(80);
+        paint.setColor(Color.BLACK);
+        canvas.drawText("남은 목숨: " + m_player.getLife(), 0, 100, paint);
+        canvas.drawText("필살기 개수: "+ m_spList.size(), 0, 200, paint);
     }
 
     //충돌 처리
@@ -138,8 +180,9 @@ public class GameState implements IState {
                     else {
                         m_expList.add(new EffectExplosion(enemy.getX(),enemy.getY()));
                         makeItem(m_itemList, enemy.getX(), enemy.getY());
-                        //m_itemList.add(new ItemAddLife(enemy.getX(), enemy.getY()));
                         iter.remove(); //적 제거
+                        SoundManager.getInstance().play(SOUND_EFFECT_1);
+                        m_count++;
                         //진화상태일 경우 플레이어 미사일은 제거되지 않는다.
                         if (!m_pmsList.get(i).isEvolvedMs()) {
                             m_pmsList.remove(i);
@@ -155,13 +198,13 @@ public class GameState implements IState {
         //getLife 메서드를 통해 현재 플레이어의 생명이 0 이면 게임을 종료
         for (int i = m_enemyList.size() - 1; i >= 0; i--) {
             if (CollisionManager.checkBoxToBox(m_player.m_boundBox, m_enemyList.get(i).m_boundBox)) {
-                m_expList.add(new EffectExplosion (m_enemyList.get(i).getX(), m_enemyList.get(i).getY()));
-                if (m_enemyList.get(i).CreateType != Enemy.TYPE_BOSS)//보스가 아니면
+                if (m_enemyList.get(i).CreateType != Enemy.TYPE_BOSS){//보스가 아니면
+                    m_expList.add(new EffectExplosion (m_enemyList.get(i).getX(), m_enemyList.get(i).getY()));
                     m_enemyList.remove(i); //충돌한 적 제거
-
+                }
                 m_player.destroyPlayer();
                 AppManager.getInstance().vibrate();
-                if (m_player.getLife() <= 0) System.exit(0);
+                if (m_player.getLife() <= 0) AppManager.getInstance().getGameView().changeGameState(new EndState());
             }
         }
 
@@ -171,53 +214,76 @@ public class GameState implements IState {
                 m_enemmsList.remove(i);
                 m_player.destroyPlayer();
                 AppManager.getInstance().vibrate();
-                if (m_player.getLife() <= 0) System.exit(0);
+                if (m_player.getLife() <= 0) AppManager.getInstance().getGameView().changeGameState(new EndState());
             }
         }
 
+        //플레이어와 아이템의 충돌
         for(int i =m_itemList.size()-1; i>=0; i--){
             if(CollisionManager.checkBoxToBox(m_player.m_boundBox, m_itemList.get(i).m_boundBox)){
                 m_itemList.get(i).getItem();
                 m_itemList.remove(i);
             }
         }
-        //진화 아이템과 충돌 대신 임시로 /x 계속 호출됨
-//        if (m_player.getLife() == 2) {
-//            changePlayerState();
-//            m_spList.add(new SpecialAttackType1());
-//        }
+
+        //Special Attack과 enemy의 충돌
+        if(m_useOfSp) {
+            SpecialAttack sp = m_spList.get(0);
+            for (iter = m_enemyList.iterator(); iter.hasNext(); ) {
+                Enemy enemy = iter.next();
+                if (CollisionManager.checkBoxToBox(sp.m_boundBox, enemy.m_boundBox)) {
+                    //boss
+                    if (enemy.CreateType == Enemy.TYPE_BOSS) {
+                        if (System.currentTimeMillis() - lastSpDamage >= 1000) { //공격 시점 이후 1초가 넘으면
+                            lastSpDamage = System.currentTimeMillis();
+                            enemy.m_hp -= m_player.m_power; //boss의 체력을 player의 공격력만큼 감소
+                        }
+                    }
+                    //일반 enemy
+                    else {
+                        m_expList.add(new EffectExplosion(enemy.getX(), enemy.getY()));
+                        makeItem(m_itemList, enemy.getX(), enemy.getY());
+                        SoundManager.getInstance().play(SOUND_EFFECT_1);
+                        iter.remove(); //적 제거
+                        m_count++;
+                    }
+                }
+            }
+        }
     }
 
     public void makeEnemy() {
-        if (System.currentTimeMillis() - lastRegenEnemy_enemy >= 3000) { //생성 시점 이후 3초가 넘으면
-            lastRegenEnemy_enemy = System.currentTimeMillis();
+        if (System.currentTimeMillis() - lastRegenEnemy >= 3000/m_stage) { //생성 시점 이후 N초가 넘으면
+            lastRegenEnemy = System.currentTimeMillis();
 
             int enemyType = rand.nextInt(3) + 1; //1,2,3
             Enemy enemy = UnitFactory.createEnemy(enemyType);
 
             assert enemy != null;
             enemy.setPosition(rand.nextInt(displayWidth - enemy.width), -60);
-            enemy.moveType = rand.nextInt(3);
+            enemy.moveType = rand.nextInt(5);
 
             m_enemyList.add(enemy);
         }
-        if (m_backGround.getScroll() == 0 && Enemy_boss.BossCnt == 0) { // 스크롤이 가장 위에 도달하면 보스 생성
-            Enemy boss = UnitFactory.createEnemy(4);
-            boss.setPosition((displayWidth - boss.width) / 2, -boss.height);
+        if (m_backGround.getScroll() == 0) { // 스크롤이 가장 위에 도달하면 보스 생성
+            if(m_stage > Enemy_boss.m_stage) {
+                Enemy_boss.m_stage = m_stage; //스테이지 당 하나만 생성되도록
 
-            m_enemyList.add(boss);
+                Enemy boss = UnitFactory.createEnemy(4);
+                boss.setPosition((displayWidth - boss.width) / 2, -boss.height);
+
+                m_enemyList.add(boss);
+            }
         }
     }
 
     public void makeItem(ArrayList<Item> itemList, int x, int y){
-        if (System.currentTimeMillis() - lastRegenEnemy_item >= 10000) { //생성 시점 이후 10초가 넘으면
-            lastRegenEnemy_item = System.currentTimeMillis();
+        if (System.currentTimeMillis() - lastRegenItem >= 4000) { //생성 시점 이후 5초가 넘으면
+            lastRegenItem = System.currentTimeMillis();
 
-            int itemType = rand.nextInt(2)+1;
+            int itemType = rand.nextInt(2);
             Item item = UnitFactory.createItem(itemType, x, y);
-
             assert  item != null;
-            //item.moveType = rand.nextInt(3);
             m_itemList.add(item);
         }
     }
@@ -231,7 +297,6 @@ public class GameState implements IState {
             synchronized (this) {
                 switch (sensorEvent.sensor.getType()) {
                     case Sensor.TYPE_ORIENTATION:
-                        //float heading = sensorEvent.values[0];
                         float pitch = sensorEvent.values[1];
                         float roll = sensorEvent.values[2];
 
@@ -254,6 +319,15 @@ public class GameState implements IState {
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(m_spList.size() > 0) {
+            m_useOfSp=true;
+            SoundManager.getInstance().play(SOUND_EFFECT_2);
+        }
+        return false;
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //키 입력에 따른 플레이어 이동
         int x = m_player.getX();
@@ -267,8 +341,10 @@ public class GameState implements IState {
             m_player.setPosition(x, y - m_player.m_speed);
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
             m_player.setPosition(x, y + m_player.m_speed);
-//        if (keyCode == KeyEvent.KEYCODE_SPACE)
-//            m_pmsList.add(new Missile_Player(x, y + 30)); //미사일이 플레이어 위에
+        if (keyCode == KeyEvent.KEYCODE_SPACE)
+            if(m_spList.size() > 0) {
+                m_useOfSp=true;
+            }
 
         return true;
     }
@@ -283,18 +359,20 @@ public class GameState implements IState {
 
     public void changePlayerState() { //진화석과 충돌하면 진화 -> state 패턴 적용
         m_player = m_player.evolve();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return false;
+        UnitFactory.setPlayer(m_player);
     }
 
     @Override
     public void destroy() {
+        AppManager.getInstance().setCount(m_count);
+        AppManager.getInstance().setGameState(null);
     }
 
     public Player getPlayer() {
         return m_player;
+    }
+
+    public void chargeSpecial(){
+        m_spList.add(m_player.getSpecial());
     }
 }

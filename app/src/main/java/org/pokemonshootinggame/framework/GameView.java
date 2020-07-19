@@ -1,7 +1,10 @@
 package org.pokemonshootinggame.framework;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Vibrator;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -10,12 +13,15 @@ import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
+import org.pokemonshootinggame.R;
+import org.pokemonshootinggame.game.DBHelper;
 import org.pokemonshootinggame.game.GameState;
 
 //SurfaceView를 이용한 빠른 그래픽 처리 기반. 화면 업데이트를 백그라운드에서 처리
 //SurfaceHolder가 Surface에 미리 그리고 이 Surface가 SurfaceView에 반영되는 방식
 //SurfaceHolder.Callback의 순수 가상 메서드 구현 필요. 실제 작업 수행은 SurfaceHolder.Callback이 수행.
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+    private DBHelper m_helper;
     private IState m_state; //state 패턴에 쓰이는 현재 상태
     private GameViewThread m_thread; //뷰에 렌더링할 스레드. SurfaceHolder의 callback 에서 이 thread를 사용해서 작업을 수행
     private GraphicObject m_image; //그림을 그리는 클래스
@@ -30,11 +36,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         AppManager.getInstance().setResources(getResources());
         AppManager.getInstance().setVibrator((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE));
 
+        /* 디비 생성 부분 */
+        m_helper = new DBHelper(context, "rank.db", null, 1);
+        SQLiteDatabase db= m_helper.getWritableDatabase();
+        try {
+            db.execSQL("CREATE TABLE if not exists RankBoard(PK INTEGER NOT NULL,score INTEGER)");
+        }catch(Exception e2){
+            System.out.println("실패 :"+e2);
+        }
+
+        AppManager.getInstance().setDBHelper(m_helper);
+
+
         getHolder().addCallback(this); // SurfaceHolder에 이 클래스에 있는 callback을 등록
 
         changeGameState(new IntroState()); //실행 테스트
 
         m_thread = new GameViewThread(getHolder(), this);
+
+        SoundManager.getInstance().init(context);
+        SoundManager.getInstance().playBackground(R.raw.background, true);
     }
 
     @Override
@@ -80,7 +101,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return m_state.onTouchEvent(event);
+            return m_state.onTouchEvent(event);
     }
 
     public void changeGameState(IState state) {

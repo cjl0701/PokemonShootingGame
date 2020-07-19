@@ -8,11 +8,11 @@ import org.pokemonshootinggame.framework.AppManager;
 import org.pokemonshootinggame.framework.GraphicObject;
 
 public class BackGround extends GraphicObject {
-    static final float SCROLL_SPEED = 2.5f; //기존 0.5f
+    static final float SCROLL_SPEED = 1.5f; //기존 0.5f
     private float m_scroll = -2000 + 480;
 
     Bitmap m_layer2;
-    static final float SCROLL_SPEED_2 = 2.5f;//기존 0.5f
+    static final float SCROLL_SPEED_2 = 1.5f;//기존 0.5f
     private float m_scroll_2 = -2000 + 480;
 
     public BackGround(int backType) {

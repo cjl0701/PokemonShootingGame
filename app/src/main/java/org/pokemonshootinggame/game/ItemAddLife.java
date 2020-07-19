@@ -29,6 +29,6 @@ public class ItemAddLife extends Item {
 
     @Override
     public void getItem(){
-        AppManager.getInstance().getGameState().getPlayer().m_life++;
+        AppManager.getInstance().getGameState().getPlayer().addLife();
     }
 }

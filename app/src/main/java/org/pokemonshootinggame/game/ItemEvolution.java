@@ -28,6 +28,11 @@ public class ItemEvolution extends Item {
     @Override
     public void getItem(){
         //아이템을 얻으면 진화
-        AppManager.getInstance().getGameState().changePlayerState();
+        if(!AppManager.getInstance().getGameState().getPlayer().evolved)
+            AppManager.getInstance().getGameState().changePlayerState();
+        //이미 진화한 상태면 special attack 사용 횟수 증가시킴
+        else
+            AppManager.getInstance().getGameState().chargeSpecial();
+
     }
 }

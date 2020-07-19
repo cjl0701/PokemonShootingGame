@@ -12,7 +12,7 @@ public class Missile_Player extends Missile {
         super(playerState.getMsBitmap());//상태에 따라 다른 미사일
         this.setPosition(x, y); //x, y는 미사일 발사 위치
 
-        m_playerState=playerState;
+        m_playerState = playerState;
         width = m_bitmap.getWidth();
         height = m_bitmap.getHeight();
     }
