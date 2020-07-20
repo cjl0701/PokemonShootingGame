@@ -9,8 +9,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import org.pokemonshootinggame.R;
-import org.pokemonshootinggame.game.GameState_Stage2;
-import org.pokemonshootinggame.game.GameState_Stage3;
+import org.pokemonshootinggame.game.gamestate.GameState_Stage2;
+import org.pokemonshootinggame.game.gamestate.GameState_Stage3;
 
 public class ClearState implements IState{
     static final int STAGE_1 = 1;

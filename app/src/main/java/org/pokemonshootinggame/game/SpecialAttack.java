@@ -3,9 +3,9 @@ package org.pokemonshootinggame.game;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
-import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
 import org.pokemonshootinggame.framework.SpriteAnimation;
+import org.pokemonshootinggame.game.player.Player;
 
 public class SpecialAttack extends SpriteAnimation {
     Rect m_boundBox = new Rect();
@@ -27,5 +27,8 @@ public class SpecialAttack extends SpriteAnimation {
     public void update(long gameTime) {
         super.update(gameTime);
         m_boundBox.set(m_x, m_y, m_x + getWidth() / 4, m_y+getHeight());
+    }
+    public Rect getBoundBox() {
+        return m_boundBox;
     }
 }

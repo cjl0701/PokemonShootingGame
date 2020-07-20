@@ -1,4 +1,4 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.enemy;
 
 import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;

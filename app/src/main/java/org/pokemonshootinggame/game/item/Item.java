@@ -1,4 +1,4 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.item;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -23,4 +23,8 @@ public abstract class Item extends SpriteAnimation {
 
 
     public abstract void getItem(); //플레이어가 아이템과 충돌했을 때 실행할 메서드
+
+    public Rect getBoundBox(){
+        return m_boundBox;
+    }
 }

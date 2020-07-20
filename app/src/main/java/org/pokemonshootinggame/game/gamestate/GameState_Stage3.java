@@ -1,4 +1,4 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.gamestate;
 
 import org.pokemonshootinggame.framework.AppManager;
 

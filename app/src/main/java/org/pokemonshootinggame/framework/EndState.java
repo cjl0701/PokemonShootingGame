@@ -12,7 +12,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import org.pokemonshootinggame.R;
-import org.pokemonshootinggame.game.Enemy_boss;
+import org.pokemonshootinggame.game.enemy.Enemy_boss;
 import org.pokemonshootinggame.game.UnitFactory;
 
 public class EndState implements IState {

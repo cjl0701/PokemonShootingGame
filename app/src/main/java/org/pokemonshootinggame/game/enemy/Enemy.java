@@ -1,4 +1,4 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.enemy;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -7,6 +7,7 @@ import android.graphics.Rect;
 
 import org.pokemonshootinggame.framework.AppManager;
 import org.pokemonshootinggame.framework.GraphicObject;
+import org.pokemonshootinggame.game.missile.Missile_Enemy;
 
 import java.util.Random;
 
@@ -165,5 +166,21 @@ public class Enemy extends GraphicObject {
     }
     public int getHeight() {
         return height;
+    }
+
+    public void setHP(int hp) {
+        m_hp = hp;
+    }
+
+    public int getCreateType() {
+        return CreateType;
+    }
+
+    public Rect getBoundBox() {
+        return m_boundBox;
+    }
+
+    public void setMoveType(int moveType) {
+        this.moveType = moveType;
     }
 }

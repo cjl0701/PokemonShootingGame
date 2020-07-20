@@ -1,6 +1,18 @@
 package org.pokemonshootinggame.game;
 
 import org.pokemonshootinggame.framework.AppManager;
+import org.pokemonshootinggame.game.enemy.Enemy;
+import org.pokemonshootinggame.game.enemy.Enemy_1;
+import org.pokemonshootinggame.game.enemy.Enemy_2;
+import org.pokemonshootinggame.game.enemy.Enemy_3;
+import org.pokemonshootinggame.game.enemy.Enemy_boss;
+import org.pokemonshootinggame.game.item.Item;
+import org.pokemonshootinggame.game.item.ItemAddLife;
+import org.pokemonshootinggame.game.item.ItemEvolution;
+import org.pokemonshootinggame.game.player.Player;
+import org.pokemonshootinggame.game.player.Player_1;
+import org.pokemonshootinggame.game.player.Player_2;
+import org.pokemonshootinggame.game.player.Player_3;
 
 public class UnitFactory {
     static int m_stage;

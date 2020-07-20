@@ -1,4 +1,4 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.missile;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -17,5 +17,8 @@ public class Missile extends GraphicObject {
         super(bitmap);
     }
 
+    public Rect getBoundBox() {
+        return m_boundBox;
+    }
 }
 

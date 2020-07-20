@@ -1,4 +1,4 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.item;
 
 import android.graphics.Bitmap;
 
@@ -28,7 +28,7 @@ public class ItemEvolution extends Item {
     @Override
     public void getItem(){
         //아이템을 얻으면 진화
-        if(!AppManager.getInstance().getGameState().getPlayer().evolved)
+        if(!AppManager.getInstance().getGameState().getPlayer().isEvolved())
             AppManager.getInstance().getGameState().changePlayerState();
         //이미 진화한 상태면 special attack 사용 횟수 증가시킴
         else

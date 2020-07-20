@@ -1,7 +1,8 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.missile;
 
 import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.framework.AppManager;
+import org.pokemonshootinggame.game.UnitFactory;
 
 public class Missile_Enemy extends Missile {
     // 미사일 이미지 폭, 높이
@@ -29,7 +30,7 @@ public class Missile_Enemy extends Missile {
         if (isBoss) { // 보스 미사일인 경우
             // 보스 미사일은 플레이어를 따라감
             if (this.m_x+this.width/2 > UnitFactory.createPlayer(1).getX()+
-                    UnitFactory.createPlayer(1).width/2)
+                    UnitFactory.createPlayer(1).getWidth()/2)
                 m_x += -1;
             else
                 m_x += 1;

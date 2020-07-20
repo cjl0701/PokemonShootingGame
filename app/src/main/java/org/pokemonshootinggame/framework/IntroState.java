@@ -7,18 +7,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.game.BackGround;
 //import org.pokemonshootinggame.game.DBHelper;
-import org.pokemonshootinggame.game.GameState;
-import org.pokemonshootinggame.framework.AppManager;
-import org.pokemonshootinggame.game.GameState_Stage1;
-import org.pokemonshootinggame.game.Player_1;
+import org.pokemonshootinggame.game.gamestate.GameState_Stage1;
 
 public class IntroState implements IState {
     private BackGround m_backGround;

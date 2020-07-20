@@ -3,8 +3,6 @@ package org.pokemonshootinggame.framework;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Vibrator;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -15,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import org.pokemonshootinggame.R;
 import org.pokemonshootinggame.game.DBHelper;
-import org.pokemonshootinggame.game.GameState;
 
 //SurfaceView를 이용한 빠른 그래픽 처리 기반. 화면 업데이트를 백그라운드에서 처리
 //SurfaceHolder가 Surface에 미리 그리고 이 Surface가 SurfaceView에 반영되는 방식

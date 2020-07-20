@@ -1,7 +1,6 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.missile;
 
-import org.pokemonshootinggame.R;
-import org.pokemonshootinggame.framework.AppManager;
+import org.pokemonshootinggame.game.player.Player;
 
 public class Missile_Player extends Missile {
     private Player m_playerState;
@@ -18,14 +17,14 @@ public class Missile_Player extends Missile {
     }
 
     public void update() {
-        m_y -= m_playerState.m_msSpeed; //미사일이 위로 발사되는 효과를 준다
+        m_y -= m_playerState.getMsSpeed(); //미사일이 위로 발사되는 효과를 준다
         if (m_y < 0) state = STATE_OUT; //화면 밖을 벗어나면 제거
 
         m_boundBox.set(m_x+10, m_y, m_x +width-10, m_y+height); //이동할 때마다 박스 영역의 값을 갱신
     }
 
     public boolean isEvolvedMs(){
-        return m_playerState.evolved;
+        return m_playerState.isEvolved();
     }
 }
 

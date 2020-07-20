@@ -34,7 +34,7 @@ public class BackGround extends GraphicObject {
     }
 
     //배경 이미지를 이동
-    void update(long gameTime) {
+    public void update(long gameTime) {
         //플레이어 캐릭터가 위로 이동하는 느낌을 표현하기 위해 배경 이미지를 지속적으로 Y 값을 증가
         m_scroll = m_scroll + SCROLL_SPEED;
         //스탑 스크롤 방식 : 스크롤의 끝에 가면 더 이상 스크롤링을 하지 않음

@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory;
 import android.os.Vibrator;
 
 import org.pokemonshootinggame.game.DBHelper;
-import org.pokemonshootinggame.game.GameState;
-import org.pokemonshootinggame.game.Player;
+import org.pokemonshootinggame.game.SpecialAttack;
+import org.pokemonshootinggame.game.gamestate.GameState;
+
+import java.util.ArrayList;
 
 //이 프레임워크를 사용하는 애플리케이션을 관리
 //AppManager를 통해 어느 클래스에서도 뷰와 리소스 등에 접근할 수 있도록
@@ -24,6 +26,7 @@ public class AppManager {
     private int playerType;
     private int m_stage = 0; //현재 스테이지
     private int m_count; //기록
+    private ArrayList<SpecialAttack> m_spList = null; //Special attack
 
     private int displayWidth;
     private int displayHeight;
@@ -31,6 +34,7 @@ public class AppManager {
 
     private AppManager() { super(); } //외부에서 new 연산자로 인스턴스 생성 불가능
 
+    //싱글톤 패턴
     public static AppManager getInstance() {
         if (s_instance == null)
             s_instance = new AppManager();
@@ -84,4 +88,7 @@ public class AppManager {
 
     public void setStage(int stage) { m_stage = stage; }
     public int getStage() { return m_stage; }
+
+    public void setSpecialAttack(ArrayList<SpecialAttack> spList) { m_spList = spList; }
+    public ArrayList<SpecialAttack> getSpList() { return m_spList; }
 }

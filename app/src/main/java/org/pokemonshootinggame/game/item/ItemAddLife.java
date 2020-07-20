@@ -1,4 +1,4 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.item;
 
 import android.graphics.Bitmap;
 

@@ -1,10 +1,10 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.gamestate;
 
 import org.pokemonshootinggame.framework.AppManager;
 
-public class GameState_Stage2  extends GameState{
-    public GameState_Stage2() {
-        m_stage = STAGE2;
+public class GameState_Stage1 extends GameState{
+    public GameState_Stage1() {
+        m_stage = STAGE1;
         AppManager.getInstance().setGameState(this);
     }
 

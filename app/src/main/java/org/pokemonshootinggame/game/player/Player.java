@@ -1,11 +1,11 @@
-package org.pokemonshootinggame.game;
+package org.pokemonshootinggame.game.player;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import org.pokemonshootinggame.framework.AppManager;
 import org.pokemonshootinggame.framework.GraphicObject;
-import org.pokemonshootinggame.framework.SpriteAnimation;
+import org.pokemonshootinggame.game.SpecialAttack;
 
 public abstract class Player extends GraphicObject {
     Rect m_boundBox=new Rect();
@@ -36,12 +36,12 @@ public abstract class Player extends GraphicObject {
 
     //캐릭터별 오버라이딩
     public abstract void attack();
-    public abstract void specialAttack(); //편의상 일단 동일하게 구현
-    public abstract Player evolve();
+    public abstract Player evolve(); //진화 전: 진화 / 진화 후: Special attack 충전
     public abstract Bitmap getMsBitmap(); //미사일 이미지
 
     public int getLife(){ return m_life; }
     public void addLife(){ m_life++; }
+
     public void destroyPlayer() {
         if (System.currentTimeMillis() - lastHittedTime >= 1000) { // 재히트 판정은 1s뒤에. 그 동안 무적
             lastHittedTime = System.currentTimeMillis();
@@ -49,5 +49,25 @@ public abstract class Player extends GraphicObject {
         }
     }
 
+    public Rect getBoundBox() {
+        return m_boundBox;
+    }
+
+    public boolean isEvolved() {
+        return evolved;
+    }
+
     public abstract SpecialAttack getSpecial();
+
+    public int getSpeed() {
+        return m_speed;
+    }
+
+    public int getMsSpeed() {
+        return m_msSpeed;
+    }
+
+    public int getPower() {
+        return m_power;
+    }
 }
