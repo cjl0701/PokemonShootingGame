@@ -1,6 +1,7 @@
 # PokemonShootingGame
-### 이전에 만들어 둔 shooting game 용 framework를 기반으로 제작
-### 디자인 패턴 적용
+###  - 이전에 만들어 둔 shooting game 용 framework를 기반으로 제작
+###  - 디자인 패턴 적용
+
 
 
 * Desing pattern 적용 사항
