@@ -17,11 +17,12 @@
     - 진화 시 적을 관통하는 미사일로 업그레이드   
     - 몬스터의 다양한 이동 패턴    
     - 보스 몬스터의 유도 미사일  
-    - 충돌 후 0.5초간 무적   
-    - 폭발 애니메이션   
+    - 충돌 후 0.5초간 무적 상태  
+    - 적 제거 시 폭발 애니메이션   
     - 충돌 시 진동      
     - 스테이지 별 난이도 증가   
-    - 게임 스테이트(Intro, Game, Clear, End) 전환   
+    - 게임 스테이트(Intro, Game, Clear, End) 전환
+    - 점수 및 랭킹 기록   
 <br>
 
 ### 프로젝트 개요
@@ -70,8 +71,8 @@ State에 따른 action의 내용이 달라지므로 *State 패턴* 적용
 
 
 > 팀원 역할
-  > 최재량: 설계, 프레임워크, 리팩토링(디자인패턴), 주요 기능 개발(game state, player, missile, item 등)
-  > 함형록: intro state, end state, ranking
-  > 김희재: enenmy
+  > 최재량: 설계, 프레임워크, 리팩토링(디자인패턴), 주요 기능 개발(game state, player, missile, item 등)   
+  > 함형록: intro state, end state, ranking   
+  > 김희재: enenmy   
      
     
