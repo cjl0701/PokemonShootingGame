@@ -70,7 +70,7 @@ State에 따른 action의 내용이 달라지므로 *State 패턴* 적용
   - SqlLite를 이용한 점수 기록 및 랭킹
 
 
-> 팀원 역할
+> 팀원 역할   
   > 최재량: 설계, 프레임워크, 리팩토링(디자인패턴), 주요 기능 개발(game state, player, missile, item 등)   
   > 함형록: intro state, end state, ranking   
   > 김희재: enenmy   
