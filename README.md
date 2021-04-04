@@ -45,7 +45,7 @@
 ![그림3](https://user-images.githubusercontent.com/55947154/113500653-b1f2b280-955a-11eb-89c1-c4fe64f50288.png)   
   - 게임의 상태에 따라 update, render, event handle 메소드 등이 달라짐.   
 이를 동일한 인터페이스로 처리하기 위해 *State 패턴* 적용
-  - 클래스 구조를 복잡한 graph 구조가 아닌 단순한 tree 구조로 사용하기 위해 AppManager를 통해 리소스의 인스턴스를 전달.    
+  - 클래스 구조를 복잡한 graph 구조가 아닌 단순한 tree 구조로 사용하기 위해 AppManager를 통해 리소스의 인스턴스를 전달    
 어디서든 전역적으로 호출할 수 있으므로 *Singleton 패턴*을 적용해 논리적 오류와 충돌을 방지하고 리소스를 절약
 
 
