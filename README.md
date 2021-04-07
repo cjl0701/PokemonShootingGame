@@ -1,13 +1,16 @@
 # Android Pokemon shooting game
 ![그림1](https://user-images.githubusercontent.com/55947154/113499521-8c14e000-9551-11eb-839a-2732f3c40470.png)   
+모바일 응용 설계 팀 프로젝트(3인 참여, 2020.07~2020.07, A+)   
+> 나의 역할   
+  > 설계, 프레임워크, 리팩토링(디자인패턴), 주요 기능 개발(game state, player, missile, item 등), 배포 파일 생성 등   
 <br>
 
 ### 게임 설명
 - **포켓몬을 테마로 한 슈팅 게임**   
   로켓단(enemy)이 쏘는 미사일(포켓볼)에 맞으면 포켓몬(player)의 체력이 감소   
 - **특징**
-  - 포켓몬(피카츄, 파이리, 꼬부기)에 따라 미사일과 진화, 필살기가 다름
-  - 진화 아이템을 먹으면 진화하여 빠르고 강력해짐   
+  - 포켓몬에 따라 미사일과 진화, 필살기가 다름
+  - 진화 아이템을 먹으면 진화하여 빠르고 강력해짐
 ![포켓몬 데모](https://user-images.githubusercontent.com/55947154/113508355-84bdf880-958a-11eb-91ba-09a8052ed038.gif)   
 
  - **기능**
@@ -22,21 +25,22 @@
     - 충돌 시 진동      
     - 스테이지 별 난이도 증가   
     - 게임 스테이트(Intro, Game, Clear, End) 전환
-    - 점수 및 랭킹 기록   
+    - 점수 및 랭킹 기록(SqlLite)   
 <br>
 
 ### 프로젝트 개요
-**1. 이전에 만들어 둔 shooting game 용 framework를 기반으로 제작**   
+**1. Framework를 만들고 이를 기반으로 게임 제작**   
  ![그림222](https://user-images.githubusercontent.com/55947154/113499722-23c6fe00-9553-11eb-8bfe-0b76400ae98b.png)   
- >*프레임워크 제작 이유: 게임 개발에 필요한 기반 틀과 기능을 미리 만들어 게임 제작 전반에 재사용*   
+ *프레임워크 제작 이유: 게임 개발에 필요한 기반 틀과 기능을 미리 만들어 게임 제작 전반에 재사용*   
 [프레임워크 README](https://github.com/cjl0701/GameFramework/blob/master/README.md "github link")   
    
 
 **2. 디자인 패턴 적용하여 리팩토링**   
-  - 캐릭터, 진화 상태에 따라 다른 action -> *State pattern*   
-  - argument에 따라 다양한 unit 객체 생성 -> *Factory method pattern*   
-  - 플레이어는 하나만 생성되야 함 -> *Singleton pattern*   
- >*디자인 패턴 적용 이유: 구조 파악에 용이하며, 변경에 유연하여 객체지향 효과 극대화. 중복 코드를 줄여 가독성 향상*
+  *디자인 패턴 적용 이유: 구조 파악에 용이하며, 변경에 유연하여 객체지향 효과 극대화, 중복 코드를 줄여 가독성 향상*   
+  >- 적용 사항 개요   
+  > 캐릭터, 진화 상태에 따라 다른 action -> *State pattern*   
+  > argument에 따라 다양한 unit 객체 생성 -> *Factory method pattern*   
+  > 플레이어는 하나만 생성되야 함 -> *Singleton pattern*   
 <br>
 
 
@@ -61,7 +65,7 @@ State에 따른 action의 내용이 달라지므로 *State 패턴* 적용
 
 <br>  
 
-### 기술 스택
+### 사용한 기술
 - Java
 - Android Studio
 - 다양한 안드로이드 API 활용
@@ -69,10 +73,5 @@ State에 따른 action의 내용이 달라지므로 *State 패턴* 적용
   - 사운드, 진동(vibrator) 효과
   - SqlLite를 이용한 점수 기록 및 랭킹
 
-
-> 팀원 역할   
-  > 최재량: 설계, 프레임워크, 리팩토링(디자인패턴), 주요 기능 개발(game state, player, missile, item 등)   
-  > 함형록: intro state, end state, ranking   
-  > 김희재: enenmy   
      
     
